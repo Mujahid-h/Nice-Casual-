@@ -1,8 +1,10 @@
-const API = "http://localhost:5000";
+import axios from "axios";
+
+const API = "http://localhost:5000/api";
 
 export const getProducts = async () => {
   try {
-    const response = await API.get("/products");
+    const response = await axios.get(`${API}/products`);
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -12,7 +14,7 @@ export const getProducts = async () => {
 
 export const getProductById = async (id) => {
   try {
-    const response = await API.get(`/products/${id}`);
+    const response = await axios.get(`${API}/products/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching product:", error);
@@ -22,7 +24,7 @@ export const getProductById = async (id) => {
 
 export const createProduct = async (productData, token) => {
   try {
-    const response = await API.post("/products", productData, {
+    const response = await axios.post(`${API}/products`, productData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -36,7 +38,7 @@ export const createProduct = async (productData, token) => {
 
 export const updateProduct = async (id, productData, token) => {
   try {
-    const response = await API.put(`/products/${id}`, productData, {
+    const response = await axios.put(`${API}/products/${id}`, productData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -50,7 +52,7 @@ export const updateProduct = async (id, productData, token) => {
 
 export const deleteProduct = async (id, token) => {
   try {
-    const response = await API.delete(`/products/${id}`, {
+    const response = await axios.delete(`${API}/products/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
