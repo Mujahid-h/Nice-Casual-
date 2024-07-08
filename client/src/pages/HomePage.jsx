@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import { getProducts } from "../api/productApi";
 import { useSelector } from "react-redux";
+import AdminPanel from "../components/AdminPanel";
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
@@ -34,8 +35,8 @@ const HomePage = () => {
           </div>
         </>
       ) : (
-        <div className="text-center my-4">
-          <h1 className="text-gray-800 text-3xl font-bold">Admin Panel</h1>
+        <div className="text-center ">
+          <AdminPanel />
         </div>
       )}
     </div>
