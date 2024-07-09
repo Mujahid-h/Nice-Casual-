@@ -15,7 +15,6 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const userData = await loginUser({ email, password });
-      console.log(userData);
       dispatch(setUserInfo(userData));
       navigate("/");
     } catch (error) {
