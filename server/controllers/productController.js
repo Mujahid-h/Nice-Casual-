@@ -28,7 +28,8 @@ const getProductById = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, countInStock, image } = req.body;
+  const { name, description, price, countInStock } = req.body;
+  const image = req.file ? req.file.path : null;
 
   const product = new Product({
     name,

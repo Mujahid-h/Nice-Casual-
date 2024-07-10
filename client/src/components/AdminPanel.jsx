@@ -39,7 +39,7 @@ const AdminPanel = () => {
 
   const handleDeleteProduct = async (productId) => {
     try {
-      await deleteProduct(productId);
+      await deleteProduct(productId, userInfo.token);
       fetchProducts();
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -48,7 +48,7 @@ const AdminPanel = () => {
 
   const handleDeleteUser = async (userId) => {
     try {
-      await deleteUser(userId);
+      await deleteUser(userId, userInfo.token);
       fetchUsers();
     } catch (error) {
       console.error("Error deleting user:", error);

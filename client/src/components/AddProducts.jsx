@@ -7,9 +7,13 @@ const AddProduct = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(null); // Change to file
   const { userInfo } = useSelector((state) => state.user);
   const navigate = useNavigate();
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,8 +22,13 @@ const AddProduct = () => {
       return;
     }
     try {
-      const newProduct = { name, description, price, image };
-      await createProduct(newProduct, userInfo.token);
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("price", price);
+      formData.append("image", image);
+
+      await createProduct(formData, userInfo.token);
       navigate("/");
     } catch (error) {
       console.error("Error adding product:", error);
@@ -62,11 +71,10 @@ const AddProduct = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Image URL</label>
+          <label className="block text-gray-700">Image</label>
           <input
-            type="text"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
+            type="file"
+            onChange={handleImageChange}
             className="w-full px-3 py-2 border rounded"
             required
           />

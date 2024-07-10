@@ -1,5 +1,6 @@
 import express from "express";
 import { protect, admin } from "../middleware/authMiddleware.js";
+import upload from "../middleware/uploadMiddleware.js";
 import {
   getProducts,
   getProductById,
@@ -10,7 +11,10 @@ import {
 
 const router = express.Router();
 
-router.route("/").get(getProducts).post(protect, admin, createProduct);
+router
+  .route("/")
+  .get(getProducts)
+  .post(protect, admin, upload.single("image"), createProduct);
 router
   .route("/:id")
   .get(getProductById)
