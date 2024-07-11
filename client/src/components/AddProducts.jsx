@@ -1,3 +1,4 @@
+// src/components/AddProduct.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -7,12 +8,17 @@ const AddProduct = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [image, setImage] = useState(null); // Change to file
+  const [image, setImage] = useState(null);
   const { userInfo } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImage(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
@@ -70,6 +76,7 @@ const AddProduct = () => {
             required
           />
         </div>
+
         <div className="mb-4">
           <label className="block text-gray-700">Image</label>
           <input

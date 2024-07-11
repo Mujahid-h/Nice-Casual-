@@ -1,83 +1,107 @@
-// server/controllers/productController.js
-import asyncHandler from "express-async-handler";
 import Product from "../models/Product.js";
 
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
-const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({});
-  res.json(products);
-});
+const getProducts = async (req, res) => {
+  try {
+    const products = await Product.find({});
+    res.json(products);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch products", error: error.message });
+  }
+};
 
 // @desc    Fetch single product
 // @route   GET /api/products/:id
 // @access  Public
-const getProductById = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id);
-
-  if (product) {
-    res.json(product);
-  } else {
-    res.status(404);
-    throw new Error("Product not found");
+const getProductById = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (product) {
+      res.json(product);
+    } else {
+      res.status(404).json({ message: "Product not found" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to fetch product", error: error.message });
   }
-});
+};
 
 // @desc    Create a product
 // @route   POST /api/products
 // @access  Private/Admin
-const createProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, countInStock } = req.body;
-  const image = req.file ? req.file.path : null;
+const createProduct = async (req, res) => {
+  try {
+    const { name, description, price, countInStock, image } = req.body;
 
-  const product = new Product({
-    name,
-    description,
-    price,
-    countInStock,
-    image,
-  });
+    const product = new Product({
+      name,
+      description,
+      price,
+      countInStock,
+      image,
+    });
 
-  const createdProduct = await product.save();
-  res.status(201).json(createdProduct);
-});
+    const createdProduct = await product.save();
+    res.status(201).json(createdProduct);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to create product", error: error.message });
+  }
+};
 
 // @desc    Update a product
 // @route   PUT /api/products/:id
 // @access  Private/Admin
-const updateProduct = asyncHandler(async (req, res) => {
-  const { name, description, price, countInStock, image } = req.body;
+const updateProduct = async (req, res) => {
+  try {
+    const { name, description, price, countInStock, image } = req.body;
 
-  const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id);
 
-  if (product) {
-    product.name = name || product.name;
-    product.description = description || product.description;
-    product.price = price || product.price;
-    product.countInStock = countInStock || product.countInStock;
-    product.image = image || product.image;
+    if (product) {
+      product.name = name || product.name;
+      product.description = description || product.description;
+      product.price = price || product.price;
+      product.countInStock = countInStock || product.countInStock;
+      product.image = image || product.image;
 
-    const updatedProduct = await product.save();
-    res.json(updatedProduct);
-  } else {
-    res.status(404);
-    throw new Error("Product not found");
+      const updatedProduct = await product.save();
+      res.json(updatedProduct);
+    } else {
+      res.status(404).json({ message: "Product not found" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to update product", error: error.message });
   }
-});
+};
 
 // @desc    Delete a product
 // @route   DELETE /api/products/:id
 // @access  Private/Admin
-const deleteProduct = asyncHandler(async (req, res) => {
-  const product = await Product.findByIdAndDelete(req.params.id);
+const deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
 
-  if (!product) {
-    res.json({ message: "Product not found" });
+    if (!product) {
+      res.status(404).json({ message: "Product not found" });
+    } else {
+      res.json({ message: "Product deleted" });
+    }
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to delete product", error: error.message });
   }
-
-  res.json({ message: "Product deleted" });
-});
+};
 
 export {
   getProducts,
