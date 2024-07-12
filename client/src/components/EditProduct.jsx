@@ -1,57 +1,106 @@
-// src/components/EditProduct.js
-import React, { useState } from "react";
-import { updateProduct } from "../api/productApi";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getProductById, updateProduct } from "../api/productApi";
+import { useSelector } from "react-redux";
 
-const EditProduct = ({ product, onProductUpdated }) => {
-  const [name, setName] = useState(product.name);
-  const [description, setDescription] = useState(product.description);
-  const [price, setPrice] = useState(product.price);
-  const [image, setImage] = useState(product.image);
+const EditProduct = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { userInfo } = useSelector((state) => state.user);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState("");
+  const [image, setImage] = useState("");
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const product = await getProductById(id);
+        setName(product.name);
+        setDescription(product.description);
+        setPrice(product.price);
+        setImage(product.image);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImage(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUpdateProduct = async () => {
+    const updatedProduct = { name, description, price, image };
     try {
-      const updatedProduct = { name, description, price, image };
-      await updateProduct(product._id, updatedProduct);
-      onProductUpdated();
+      await updateProduct(id, updatedProduct, userInfo.token);
+      navigate("/");
     } catch (error) {
       console.error("Error updating product:", error);
     }
   };
 
   return (
-    <div>
-      <h2>Edit Product</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
-        <input
-          type="number"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Image URL"
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-          required
-        />
-        <button type="submit">Update Product</button>
+    <div className="container mx-auto p-4">
+      <h1 className="text-gray-800 text-center font-bold my-4 text-3xl">
+        Edit Product
+      </h1>
+      <form onSubmit={(e) => e.preventDefault()} className="max-w-md mx-auto">
+        <div className="mb-4">
+          <label className="block text-gray-700">Name</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-3 py-2 border rounded"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Description</label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full px-3 py-2 border rounded"
+          ></textarea>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Price</label>
+          <input
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="w-full px-3 py-2 border rounded"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700">Image URL</label>
+          <input
+            type="file"
+            onChange={handleImageChange}
+            className="w-full px-3 py-2 border rounded"
+          />
+        </div>
+        <div className="flex justify-end">
+          <button
+            onClick={() => navigate("/a")}
+            className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleUpdateProduct}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300"
+          >
+            Update
+          </button>
+        </div>
       </form>
     </div>
   );

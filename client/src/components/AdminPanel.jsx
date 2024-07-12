@@ -1,3 +1,5 @@
+// src/pages/AdminPanel.js
+
 import React, { useEffect, useState } from "react";
 import { getProducts, deleteProduct } from "../api/productApi";
 import { getUsers, deleteUser } from "../api/userApi";
@@ -68,58 +70,88 @@ const AdminPanel = () => {
           Add Product
         </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <div>
-          {products.length > 0 && (
-            <>
-              <h2 className="text-gray-800 font-bold mb-2">Products</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="overflow-x-auto">
+          <h2 className="text-gray-800 font-bold mb-2 text-xl">Products</h2>
+          <table className="w-full bg-white border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="py-2 px-4 border text-center font-semibold">
+                  Image
+                </th>
+                <th className="py-2 px-4 border text-center font-semibold">
+                  Name
+                </th>
+                <th className="py-2 px-4 border text-center font-semibold">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
               {products.map((product) => (
-                <div
-                  key={product._id}
-                  className="mb-2 flex justify-between items-center"
-                >
-                  <span>{product.name}</span>
-                  <div>
+                <tr key={product._id} className="hover:bg-gray-50">
+                  <td className="py-2 px-4 flex justify-center border">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-12 h-12 object-cover"
+                    />
+                  </td>
+                  <td className="py-2 text-center px-4 border">
+                    {product.name}
+                  </td>
+                  <td className="py-2 text-center px-4 border">
                     <button
-                      onClick={() =>
-                        console.log("Edit product functionality here")
-                      }
-                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2"
+                      onClick={() => navigate(`/products/edit/${product._id}`)}
+                      className="bg-yellow-500 text-white px-3 py-1 rounded mr-2 mb-1 hover:bg-yellow-600"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => handleDeleteProduct(product._id)}
-                      className="bg-red-500 text-white px-2 py-1 rounded"
+                      className="bg-red-500 text-white px-3 py-1 mt-1 rounded hover:bg-red-600"
                     >
                       Delete
                     </button>
-                  </div>
-                </div>
+                  </td>
+                </tr>
               ))}
-            </>
-          )}
+            </tbody>
+          </table>
         </div>
-        <div>
-          {users.length > 0 && (
-            <>
-              <h2 className="text-gray-800 font-bold mb-2">Users</h2>
+        <div className="overflow-x-auto">
+          <h2 className="text-gray-800 font-bold mb-2 text-xl">Users</h2>
+          <table className="w-full bg-white border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="py-2 px-4 border text-center font-semibold">
+                  Name
+                </th>
+                <th className="py-2 px-4 border text-center font-semibold">
+                  Email
+                </th>
+                <th className="py-2 px-4 border text-center font-semibold">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
               {users.map((user) => (
-                <div
-                  key={user._id}
-                  className="mb-2 flex justify-between items-center"
-                >
-                  <span>{user.name}</span>
-                  <button
-                    onClick={() => handleDeleteUser(user._id)}
-                    className="bg-red-500 text-white px-2 py-1 rounded"
-                  >
-                    Delete
-                  </button>
-                </div>
+                <tr key={user._id} className="hover:bg-gray-50">
+                  <td className="py-2 px-4 border">{user.name}</td>
+                  <td className="py-2 px-4 border">{user.email}</td>
+                  <td className="py-2 px-4 border">
+                    <button
+                      onClick={() => handleDeleteUser(user._id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
               ))}
-            </>
-          )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
