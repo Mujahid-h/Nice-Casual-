@@ -5,8 +5,8 @@ import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import AddProduct from "./components/AddProducts";
-import EditProduct from "./components/EditProduct";
+import AddProduct from "./pages/AddProducts";
+import EditProduct from "./pages/EditProduct";
 
 const App = () => {
   return (
