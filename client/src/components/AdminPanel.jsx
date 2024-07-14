@@ -1,12 +1,10 @@
-// src/pages/AdminPanel.js
-
 import React, { useEffect, useState } from "react";
 import { getProducts, deleteProduct } from "../api/productApi";
 import { getUsers, deleteUser } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-const AdminPanel = () => {
+const AdminPanel = ({ toggleUserView }) => {
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
   const { userInfo } = useSelector((state) => state.user);
@@ -62,17 +60,25 @@ const AdminPanel = () => {
       <h1 className="text-gray-800 text-center font-bold my-4 text-3xl">
         Admin Panel
       </h1>
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex justify-end space-x-4">
         <button
           onClick={() => navigate("/products/create")}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300"
         >
           Add Product
         </button>
+        <button
+          onClick={toggleUserView}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-300"
+        >
+          View as User
+        </button>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="overflow-x-auto">
-          <h2 className="text-gray-800 font-bold mb-2 text-xl">Products</h2>
+          <h2 className="text-gray-800 font-bold mb-2 text-xl text-center">
+            Products
+          </h2>
           <table className="w-full bg-white border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
@@ -120,7 +126,9 @@ const AdminPanel = () => {
           </table>
         </div>
         <div className="overflow-x-auto">
-          <h2 className="text-gray-800 font-bold mb-2 text-xl">Users</h2>
+          <h2 className="text-gray-800 font-bold mb-2 text-xl text-center">
+            Users
+          </h2>
           <table className="w-full bg-white border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
@@ -138,12 +146,12 @@ const AdminPanel = () => {
             <tbody>
               {users.map((user) => (
                 <tr key={user._id} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 border">{user.name}</td>
-                  <td className="py-2 px-4 border">{user.email}</td>
-                  <td className="py-2 px-4 border">
+                  <td className="py-2 px-4 border text-center">{user.name}</td>
+                  <td className="py-2 px-4 border text-center">{user.email}</td>
+                  <td className="py-2 px-4 border text-center">
                     <button
                       onClick={() => handleDeleteUser(user._id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                      className="bg-red-500 text-white  px-3 py-1 rounded hover:bg-red-600"
                     >
                       Delete
                     </button>

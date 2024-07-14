@@ -12,6 +12,7 @@ const EditProduct = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState("");
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -44,6 +45,7 @@ const EditProduct = () => {
       navigate("/");
     } catch (error) {
       console.error("Error updating product:", error);
+      setError("Updating product failed");
     }
   };
 
@@ -87,6 +89,7 @@ const EditProduct = () => {
             className="w-full px-3 py-2 border rounded"
           />
         </div>
+        {error && <div className="text-red-500 text-center mb-4">{error}</div>}
         <div className="flex justify-end">
           <button
             onClick={() => navigate("/")}
