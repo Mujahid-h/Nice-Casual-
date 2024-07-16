@@ -4,6 +4,7 @@ import { getProducts } from "../api/productApi";
 import { useSelector } from "react-redux";
 import AdminPanel from "../components/AdminPanel";
 import HeroSection from "../components/HeroSection";
+import DefaultLayout from "../components/DefaultLayout";
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
@@ -28,7 +29,7 @@ const HomePage = () => {
   };
 
   return (
-    <div>
+    <DefaultLayout>
       {userInfo?.isAdmin && !isUserView ? (
         <AdminPanel toggleUserView={toggleUserView} />
       ) : (
@@ -56,7 +57,7 @@ const HomePage = () => {
           </div>
         </>
       )}
-    </div>
+    </DefaultLayout>
   );
 };
 
