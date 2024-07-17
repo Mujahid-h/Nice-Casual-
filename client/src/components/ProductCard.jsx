@@ -9,11 +9,15 @@ const ProductCard = ({ product }) => {
         className="card-img-top p-1"
         src={product.image}
         alt={product.name}
+        style={{
+          borderTopLeftRadius: "8px",
+          borderTopRightRadius: "8px",
+        }}
       />
       <div className="card-body">
-        <h5 className="card-title">{product.name}</h5>
-        <p className="card-text">{product.description}</p>
-        <p className="card-text">${product.price}</p>
+        <h5 className="card-title text-xl font-bold">{product.name}</h5>
+        <p className="card-text text-slate-500">{product.description}</p>
+        <p className="card-text text-lg font-semibold mb-2">${product.price}</p>
         <div className="d-flex justify-content-between">
           <Link to={`/product/${product._id}`} className="btn btn-primary">
             View Details

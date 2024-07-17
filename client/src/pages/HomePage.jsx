@@ -5,13 +5,16 @@ import { useSelector } from "react-redux";
 import AdminPanel from "../components/AdminPanel";
 import HeroSection from "../components/HeroSection";
 import DefaultLayout from "../components/DefaultLayout";
+import Spinner from "../components/Spinner";
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
   const { userInfo } = useSelector((state) => state.user);
   const [isUserView, setIsUserView] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     const fetchProducts = async () => {
       try {
         const fetchedProducts = await getProducts();
@@ -19,6 +22,7 @@ const HomePage = () => {
       } catch (error) {
         console.log(error);
       }
+      setLoading(false);
     };
 
     fetchProducts();
@@ -50,9 +54,13 @@ const HomePage = () => {
               )}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
-              {products.map((item) => (
-                <ProductCard key={item._id} product={item} />
-              ))}
+              {loading ? (
+                <Spinner />
+              ) : (
+                products.map((item) => (
+                  <ProductCard key={item._id} product={item} />
+                ))
+              )}
             </div>
           </div>
         </>
