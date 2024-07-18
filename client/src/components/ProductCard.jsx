@@ -1,8 +1,15 @@
-// src/components/ProductCard.js
 import React from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../redux/cartSlice";
 
 const ProductCard = ({ product }) => {
+  const dispatch = useDispatch();
+
+  const handleAddToCart = () => {
+    dispatch(addToCart(product));
+  };
+
   return (
     <div className="card bg-slate-300" style={{ width: "18rem" }}>
       <img
@@ -22,21 +29,13 @@ const ProductCard = ({ product }) => {
           <Link to={`/product/${product._id}`} className="btn btn-primary">
             View Details
           </Link>
-          <button
-            onClick={() => addToCart(product)}
-            className="btn btn-success"
-          >
+          <button onClick={handleAddToCart} className="btn btn-success">
             Add to Cart
           </button>
         </div>
       </div>
     </div>
   );
-};
-
-const addToCart = (product) => {
-  // Function to handle adding product to cart
-  console.log(`${product.name} added to cart`);
 };
 
 export default ProductCard;
