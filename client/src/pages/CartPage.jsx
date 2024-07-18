@@ -1,5 +1,6 @@
 // src/pages/CartPage.js
 import React from "react";
+import { MdFolderDelete } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import { removeFromCart, clearCart } from "../redux/cartSlice";
 import { Link } from "react-router-dom";
@@ -30,7 +31,7 @@ const CartPage = () => {
               onClick={handleClearCart}
               className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
             >
-              Clear Cart
+              <MdFolderDelete />
             </button>
           </div>
           <div className="grid grid-cols-1 gap-4">

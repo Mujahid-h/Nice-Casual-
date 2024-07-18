@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserInfo } from "../redux/userSlice"; // Make sure to import the correct action
+import { TiShoppingCart } from "react-icons/ti";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -91,6 +92,13 @@ const Navbar = () => {
                 className=" text-lg font-semibold  transition duration-300"
               >
                 Login
+              </Link>
+
+              <Link
+                to="/cart"
+                className=" text-lg font-semibold  transition duration-300"
+              >
+                <TiShoppingCart />
               </Link>
             </div>
           )}
