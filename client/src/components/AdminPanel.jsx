@@ -3,10 +3,13 @@ import { getProducts, deleteProduct } from "../api/productApi";
 import { getUsers, deleteUser } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Spinner from "../components/Spinner";
 
 const AdminPanel = ({ toggleUserView }) => {
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(false);
   const { userInfo } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
@@ -16,15 +19,18 @@ const AdminPanel = ({ toggleUserView }) => {
   }, []);
 
   const fetchProducts = async () => {
+    setLoadingProducts(true);
     try {
       const fetchedProducts = await getProducts();
       setProducts(fetchedProducts);
     } catch (error) {
       console.log(error);
     }
+    setLoadingProducts(false);
   };
 
   const fetchUsers = async () => {
+    setLoadingUsers(true);
     if (!userInfo || !userInfo.token) {
       console.error("User is not logged in or token is missing");
       return;
@@ -35,6 +41,7 @@ const AdminPanel = ({ toggleUserView }) => {
     } catch (error) {
       console.log(error);
     }
+    setLoadingUsers(false);
   };
 
   const handleDeleteProduct = async (productId) => {
@@ -79,87 +86,101 @@ const AdminPanel = ({ toggleUserView }) => {
           <h2 className="text-gray-800 font-bold mb-2 text-xl text-center">
             Products
           </h2>
-          <table className="w-full bg-white border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="py-2 px-4 border text-center font-semibold">
-                  Image
-                </th>
-                <th className="py-2 px-4 border text-center font-semibold">
-                  Name
-                </th>
-                <th className="py-2 px-4 border text-center font-semibold">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map((product) => (
-                <tr key={product._id} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 flex justify-center border">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-12 h-12 object-cover"
-                    />
-                  </td>
-                  <td className="py-2 text-center px-4 border">
-                    {product.name}
-                  </td>
-                  <td className="py-2 text-center px-4 border">
-                    <button
-                      onClick={() => navigate(`/products/edit/${product._id}`)}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded mr-2 mb-1 hover:bg-yellow-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteProduct(product._id)}
-                      className="bg-red-500 text-white px-3 py-1 mt-1 rounded hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </td>
+          {loadingProducts ? (
+            <Spinner />
+          ) : (
+            <table className="w-full bg-white border-collapse border border-gray-300">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="py-2 px-4 border text-center font-semibold">
+                    Image
+                  </th>
+                  <th className="py-2 px-4 border text-center font-semibold">
+                    Name
+                  </th>
+                  <th className="py-2 px-4 border text-center font-semibold">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {products.map((product) => (
+                  <tr key={product._id} className="hover:bg-gray-50">
+                    <td className="py-2 px-4 flex justify-center border">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-12 h-12 object-cover"
+                      />
+                    </td>
+                    <td className="py-2 text-center px-4 border">
+                      {product.name}
+                    </td>
+                    <td className="py-2 text-center px-4 border">
+                      <button
+                        onClick={() =>
+                          navigate(`/products/edit/${product._id}`)
+                        }
+                        className="bg-yellow-500 text-white px-3 py-1 rounded mr-2 mb-1 hover:bg-yellow-600"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteProduct(product._id)}
+                        className="bg-red-500 text-white px-3 py-1 mt-1 rounded hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
         <div className="overflow-x-auto">
           <h2 className="text-gray-800 font-bold mb-2 text-xl text-center">
             Users
           </h2>
-          <table className="w-full bg-white border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="py-2 px-4 border text-center font-semibold">
-                  Name
-                </th>
-                <th className="py-2 px-4 border text-center font-semibold">
-                  Email
-                </th>
-                <th className="py-2 px-4 border text-center font-semibold">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user._id} className="hover:bg-gray-50">
-                  <td className="py-2 px-4 border text-center">{user.name}</td>
-                  <td className="py-2 px-4 border text-center">{user.email}</td>
-                  <td className="py-2 px-4 border text-center">
-                    <button
-                      onClick={() => handleDeleteUser(user._id)}
-                      className="bg-red-500 text-white  px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </td>
+          {loadingUsers ? (
+            <Spinner />
+          ) : (
+            <table className="w-full bg-white border-collapse border border-gray-300">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="py-2 px-4 border text-center font-semibold">
+                    Name
+                  </th>
+                  <th className="py-2 px-4 border text-center font-semibold">
+                    Email
+                  </th>
+                  <th className="py-2 px-4 border text-center font-semibold">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user._id} className="hover:bg-gray-50">
+                    <td className="py-2 px-4 border text-center">
+                      {user.name}
+                    </td>
+                    <td className="py-2 px-4 border text-center">
+                      {user.email}
+                    </td>
+                    <td className="py-2 px-4 border text-center">
+                      <button
+                        onClick={() => handleDeleteUser(user._id)}
+                        className="bg-red-500 text-white  px-3 py-1 rounded hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

@@ -1,15 +1,16 @@
 import React from "react";
-import { Hourglass } from "react-loader-spinner";
+import { FidgetSpinner } from "react-loader-spinner";
 
 const Spinner = () => {
   return (
     <div className="flex justify-center items-center w-full">
-      <Hourglass
+      <FidgetSpinner
         visible={true}
-        height="120"
-        width="120"
-        ariaLabel="hourglass-loading"
-        colors={["#306cce", "#72a1ed"]}
+        height="80"
+        width="80"
+        ariaLabel="fidget-spinner-loading"
+        wrapperStyle={{}}
+        wrapperClass="fidget-spinner-wrapper"
       />
     </div>
   );
