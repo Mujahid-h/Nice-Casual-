@@ -23,6 +23,21 @@ const CartPage = () => {
     dispatch(clearCart());
   };
 
+  // Group items by product ID
+  const groupedItems = cartItems.reduce((acc, item) => {
+    if (!acc[item._id]) {
+      acc[item._id] = { ...item, sizes: {} };
+    }
+    acc[item._id].sizes[item.size] = item.quantity;
+    return acc;
+  }, {});
+
+  // Calculate total amount
+  const totalAmount = cartItems.reduce(
+    (total, item) => total + item.price * item.quantity,
+    0
+  );
+
   return (
     <DefaultLayout>
       <div className="container mx-auto p-4">
@@ -36,72 +51,74 @@ const CartPage = () => {
             <div className="mb-4 flex justify-end">
               <button
                 onClick={handleClearCart}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300"
+                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300 flex items-center"
               >
-                <MdFolderDelete />
+                <MdFolderDelete className="mr-2" /> Clear Cart
               </button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {cartItems.map((item) => (
+            <div className="space-y-4">
+              {Object.values(groupedItems).map((item) => (
                 <div
-                  key={`${item._id}-${item.size}`}
-                  className="bg-slate-300 p-4 rounded flex flex-col"
+                  key={item._id}
+                  className="bg-slate-300 p-4 rounded flex flex-col md:flex-row items-start md:items-center"
                 >
-                  <div className="flex justify-between items-center">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-16 h-16 object-cover rounded"
-                    />
-                    <div className="flex-grow ml-4">
-                      <h5 className="font-bold text-xl">{item.name}</h5>
-                      <p className="text-slate-500">{item.description}</p>
-                      <p className="text-lg font-semibold mb-2">
-                        ${item.price}
-                      </p>
-                      <p className="text-sm">Size: {item.size}</p>
-                      <div className="flex items-center space-x-2 mt-2">
-                        <button
-                          onClick={() =>
-                            handleQuantityChange(
-                              item._id,
-                              item.size,
-                              item.quantity - 1
-                            )
-                          }
-                          className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500 transition duration-300"
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full md:w-32 h-32 object-contain rounded mb-4 md:mb-0 md:mr-4"
+                  />
+                  <div className="flex-grow">
+                    <h5 className="font-bold text-xl mb-2">{item.name}</h5>
+                    <p className="text-slate-500 mb-2">{item.description}</p>
+                    <p className="text-lg font-semibold mb-2">${item.price}</p>
+                    <div className="space-y-2 md:space-y-0 md:flex md:flex-wrap">
+                      {Object.entries(item.sizes).map(([size, quantity]) => (
+                        <div
+                          key={size}
+                          className="flex items-center space-x-2 mb-2 md:mb-0 md:mr-4"
                         >
-                          -
-                        </button>
-                        <span className="text-lg">{item.quantity}</span>
-                        <button
-                          onClick={() =>
-                            handleQuantityChange(
-                              item._id,
-                              item.size,
-                              item.quantity + 1
-                            )
-                          }
-                          className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500 transition duration-300"
-                        >
-                          +
-                        </button>
-                      </div>
+                          <span className="text-sm font-medium w-16">
+                            Size: {size}
+                          </span>
+                          <button
+                            onClick={() =>
+                              handleQuantityChange(item._id, size, quantity - 1)
+                            }
+                            className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500 transition duration-300"
+                          >
+                            -
+                          </button>
+                          <span className="text-lg w-8 text-center">
+                            {quantity}
+                          </span>
+                          <button
+                            onClick={() =>
+                              handleQuantityChange(item._id, size, quantity + 1)
+                            }
+                            className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500 transition duration-300"
+                          >
+                            +
+                          </button>
+                          <button
+                            onClick={() => handleRemoveFromCart(item._id, size)}
+                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-300 ml-2"
+                          >
+                            <MdDeleteOutline />
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                    <button
-                      onClick={() => handleRemoveFromCart(item._id, item.size)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      <MdDeleteOutline />
-                    </button>
                   </div>
                 </div>
               ))}
             </div>
-            <div className="mt-4 text-center">
+            <div className="mt-8 text-right">
+              <p className="text-2xl font-bold mb-4">
+                Total: ${totalAmount.toFixed(2)}
+              </p>
               <Link
                 to="/checkout"
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300"
+                className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition duration-300 inline-block"
               >
                 Proceed to Checkout
               </Link>

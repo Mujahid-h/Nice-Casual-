@@ -1,45 +1,145 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { getProductById } from "../api/productApi";
+import { addToCart } from "../redux/cartSlice";
 import DefaultLayout from "../components/DefaultLayout";
+import Spinner from "../components/Spinner"; // Import the Spinner component
 
 const ProductDetailPage = () => {
   const { id } = useParams();
+  const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true); // Add loading state
+  const initialQuantities = {
+    Small: 0,
+    Medium: 0,
+    Large: 0,
+    XLarge: 0,
+  };
+  const [quantities, setQuantities] = useState(initialQuantities);
+  const [alert, setAlert] = useState("");
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        setLoading(true); // Set loading to true before fetching
         const fetchedProduct = await getProductById(id);
         setProduct(fetchedProduct);
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false); // Set loading to false after fetching (success or fail)
       }
     };
 
     fetchProduct();
   }, [id]);
 
+  const handleQuantityChange = (size, value) => {
+    setQuantities((prevQuantities) => ({
+      ...prevQuantities,
+      [size]: Math.max(prevQuantities[size] + value, 0),
+    }));
+  };
+
+  const handleAddToCart = () => {
+    const totalQuantity = Object.values(quantities).reduce((a, b) => a + b, 0);
+    if (totalQuantity === 0) {
+      setAlert("Please select a size before adding to cart.");
+      setTimeout(() => setAlert(""), 3000);
+      return;
+    }
+
+    for (const size in quantities) {
+      if (quantities[size] > 0) {
+        dispatch(addToCart({ ...product, size, quantity: quantities[size] }));
+      }
+    }
+    setAlert("Added to cart successfully!");
+    setTimeout(() => setAlert(""), 3000);
+  };
+
+  if (loading) {
+    return (
+      <DefaultLayout>
+        <div className="flex justify-center items-center h-screen">
+          <Spinner />
+        </div>
+      </DefaultLayout>
+    );
+  }
+
   if (!product) {
-    return <div>Loading...</div>;
+    return (
+      <DefaultLayout>
+        <div className="text-center mt-8">Product not found</div>
+      </DefaultLayout>
+    );
   }
 
   return (
     <DefaultLayout>
       <div className="container mx-auto p-4">
         <div className="flex flex-col lg:flex-row">
-          <div className="lg:w-1/2">
+          <div className="lg:w-1/2 mb-4 lg:mb-0 shadow-md">
             <img
               src={product.image}
               alt={product.name}
               className="w-full rounded shadow-md"
             />
           </div>
-          <div className="lg:w-1/2 lg:pl-8 mt-4 lg:mt-0">
-            <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+          <div className="lg:w-1/2 lg:pl-8">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-4">
+              {product.name}
+            </h1>
             <p className="text-xl text-gray-700 mb-4">${product.price}</p>
             <p className="text-gray-600 mb-4">{product.description}</p>
-            <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300">
+            <div className="mb-4">
+              <h6 className="text-sm font-semibold mb-2">Size & Quantity:</h6>
+              <div className="grid grid-cols-2 gap-2">
+                {Object.keys(initialQuantities).map((size) => (
+                  <div
+                    key={size}
+                    className="flex items-center justify-between bg-gray-100 rounded-md p-2"
+                  >
+                    <span className="text-sm font-medium">{size}</span>
+                    <div className="flex items-center">
+                      <button
+                        onClick={() => handleQuantityChange(size, -1)}
+                        className="bg-gray-300 text-gray-600 rounded-full w-6 h-6 flex items-center justify-center text-sm focus:outline-none"
+                      >
+                        -
+                      </button>
+                      <span className="mx-2 text-sm w-6 text-center">
+                        {quantities[size]}
+                      </span>
+                      <button
+                        onClick={() => handleQuantityChange(size, 1)}
+                        className="bg-gray-300 text-gray-600 rounded-full w-6 h-6 flex items-center justify-center text-sm focus:outline-none"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {alert && (
+              <div
+                className={`mb-4 p-2 rounded ${
+                  alert.includes("successfully")
+                    ? "bg-green-100 text-green-700"
+                    : "bg-red-100 text-red-700"
+                }`}
+              >
+                {alert}
+              </div>
+            )}
+            <button
+              onClick={handleAddToCart}
+              className="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 transition duration-300"
+            >
               Add to Cart
             </button>
           </div>

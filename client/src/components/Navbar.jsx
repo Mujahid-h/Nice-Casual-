@@ -4,12 +4,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { setUserInfo } from "../redux/userSlice";
 import { TiShoppingCart } from "react-icons/ti";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
+import { selectUniqueProductCount } from "../redux/cartSlice";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const userLogin = useSelector((state) => state.user.userInfo);
-  const cartItemsCount = useSelector((state) => state.cart.cartItems.length);
+  const uniqueProductCount = useSelector(selectUniqueProductCount);
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -92,9 +93,9 @@ const Navbar = () => {
           )}
           <Link to="/cart" className="relative text-lg font-semibold">
             <TiShoppingCart className="text-3xl" />
-            {cartItemsCount > 0 && (
+            {uniqueProductCount > 0 && (
               <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-400 rounded-full flex items-center justify-center text-white text-xs">
-                {cartItemsCount}
+                {uniqueProductCount}
               </div>
             )}
           </Link>
@@ -175,9 +176,9 @@ const Navbar = () => {
               onClick={toggleMenu}
             >
               <TiShoppingCart className="text-3xl" />
-              {cartItemsCount > 0 && (
-                <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-400 rounded-full flex items-center justify-center text-white text-xs">
-                  {cartItemsCount}
+              {uniqueProductCount > 0 && (
+                <div className="absolute -top-2 -right-2  bg-red-600 rounded-full flex items-center justify-center text-white text-xs">
+                  {uniqueProductCount}
                 </div>
               )}
             </Link>

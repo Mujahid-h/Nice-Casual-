@@ -43,4 +43,12 @@ const cartSlice = createSlice({
 
 export const { addToCart, removeFromCart, updateQuantity, clearCart } =
   cartSlice.actions;
+
+export const selectUniqueProductCount = (state) => {
+  const uniqueProductIds = new Set(
+    state.cart.cartItems.map((item) => item._id)
+  );
+  return uniqueProductIds.size;
+};
+
 export default cartSlice.reducer;
