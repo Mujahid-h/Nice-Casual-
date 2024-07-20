@@ -5,6 +5,7 @@ import { setUserInfo } from "../redux/userSlice";
 import { TiShoppingCart } from "react-icons/ti";
 import { HiOutlineMenu, HiOutlineX } from "react-icons/hi";
 import { selectUniqueProductCount } from "../redux/cartSlice";
+import logo from "../assets/logo.png";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -27,10 +28,10 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#F0EBE6] px-4 py-2 shadow-md text-gray-700">
+    <nav className="bg-[#F0EBE6] md:px-12 sm:px-8 py-2 shadow-md text-gray-700">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-4">
-          <img className="h-16 w-auto" src="./NC.png" alt="Logo" />
+          <img className="h-16 w-auto" src={logo} alt="Logo" />
         </Link>
 
         <div className="hidden md:flex items-center space-x-4">
