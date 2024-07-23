@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { removeFromCart, updateQuantity, clearCart } from "../redux/cartSlice";
 import { Link } from "react-router-dom";
 import DefaultLayout from "../components/DefaultLayout";
+import { HiFolderRemove } from "react-icons/hi";
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -11,6 +12,14 @@ const CartPage = () => {
 
   const handleRemoveFromCart = (productId, size) => {
     dispatch(removeFromCart({ _id: productId, size }));
+  };
+
+  const handleRemoveProductFromCart = (productId) => {
+    cartItems
+      .filter((item) => item._id === productId)
+      .forEach((item) => {
+        dispatch(removeFromCart({ _id: productId, size: item.size }));
+      });
   };
 
   const handleQuantityChange = (productId, size, newQuantity) => {
@@ -51,9 +60,9 @@ const CartPage = () => {
             <div className="mb-4 flex justify-end">
               <button
                 onClick={handleClearCart}
-                className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300 flex items-center"
+                className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700 transition duration-300 flex items-center"
               >
-                <MdFolderDelete className="mr-2" /> Clear Cart
+                <MdFolderDelete size={20} className="mr-2" /> Clear Cart
               </button>
             </div>
             <div className="space-y-4">
@@ -109,6 +118,13 @@ const CartPage = () => {
                       ))}
                     </div>
                   </div>
+                  <button
+                    onClick={() => handleRemoveProductFromCart(item._id)}
+                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300 mt-4 md:mt-0 md:ml-4 flex gap-2 items-center mx-auto"
+                  >
+                    <HiFolderRemove size={20} />
+                    Delete Product
+                  </button>
                 </div>
               ))}
             </div>
