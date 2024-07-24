@@ -47,6 +47,11 @@ const CartPage = () => {
     0
   );
 
+  // Calculate tax and delivery charges
+  const tax = totalAmount * 0.18;
+  const deliveryCharge = 250;
+  const grandTotal = totalAmount + tax + deliveryCharge;
+
   return (
     <DefaultLayout>
       <div className="container mx-auto p-4">
@@ -65,79 +70,109 @@ const CartPage = () => {
                 <MdFolderDelete size={20} className="mr-2" /> Clear Cart
               </button>
             </div>
-            <div className="space-y-4">
-              {Object.values(groupedItems).map((item) => (
-                <div
-                  key={item._id}
-                  className="bg-slate-300 p-4 rounded flex flex-col md:flex-row items-start md:items-center"
-                >
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="w-full md:w-32 h-32 object-contain rounded mb-4 md:mb-0 md:mr-4"
-                  />
-                  <div className="flex-grow">
-                    <h5 className="font-bold text-xl mb-2">{item.name}</h5>
-                    <p className="text-slate-500 mb-2">{item.description}</p>
-                    <p className="text-lg font-semibold mb-2">${item.price}</p>
-                    <div className="space-y-2 md:space-y-0 md:flex md:flex-wrap">
-                      {Object.entries(item.sizes).map(([size, quantity]) => (
-                        <div
-                          key={size}
-                          className="flex items-center space-x-2 mb-2 md:mb-0 md:mr-4"
-                        >
-                          <span className="text-sm font-medium w-16">
-                            Size: {size}
-                          </span>
-                          <button
-                            onClick={() =>
-                              handleQuantityChange(item._id, size, quantity - 1)
-                            }
-                            className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500 transition duration-300"
-                          >
-                            -
-                          </button>
-                          <span className="text-lg w-8 text-center">
-                            {quantity}
-                          </span>
-                          <button
-                            onClick={() =>
-                              handleQuantityChange(item._id, size, quantity + 1)
-                            }
-                            className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500 transition duration-300"
-                          >
-                            +
-                          </button>
-                          <button
-                            onClick={() => handleRemoveFromCart(item._id, size)}
-                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-300 ml-2"
-                          >
-                            <MdDeleteOutline />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => handleRemoveProductFromCart(item._id)}
-                    className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300 mt-4 md:mt-0 md:ml-4 flex gap-2 items-center mx-auto"
+            <div className="flex flex-col lg:flex-row lg:justify-between">
+              <div className="lg:w-9/12 w-full space-y-4">
+                {Object.values(groupedItems).map((item) => (
+                  <div
+                    key={item._id}
+                    className="bg-slate-300 p-4 rounded flex flex-col md:flex-row items-start md:items-center"
                   >
-                    <HiFolderRemove size={20} />
-                    Delete Product
-                  </button>
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-full md:w-32 h-32 object-contain rounded mb-4 md:mb-0 md:mr-4"
+                    />
+                    <div className="flex-grow">
+                      <h5 className="font-bold text-xl mb-2">{item.name}</h5>
+                      <p className="text-slate-500 mb-2">{item.description}</p>
+                      <p className="text-lg font-semibold mb-2">
+                        ${item.price}
+                      </p>
+                      <div className="space-y-2 md:space-y-0 md:flex md:flex-wrap">
+                        {Object.entries(item.sizes).map(([size, quantity]) => (
+                          <div
+                            key={size}
+                            className="flex items-center space-x-2 mb-2 md:mb-0 md:mr-4"
+                          >
+                            <span className="text-sm font-medium w-16">
+                              Size: {size}
+                            </span>
+                            <button
+                              onClick={() =>
+                                handleQuantityChange(
+                                  item._id,
+                                  size,
+                                  quantity - 1
+                                )
+                              }
+                              className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500 transition duration-300"
+                            >
+                              -
+                            </button>
+                            <span className="text-lg w-8 text-center">
+                              {quantity}
+                            </span>
+                            <button
+                              onClick={() =>
+                                handleQuantityChange(
+                                  item._id,
+                                  size,
+                                  quantity + 1
+                                )
+                              }
+                              className="bg-gray-400 text-white px-2 py-1 rounded hover:bg-gray-500 transition duration-300"
+                            >
+                              +
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleRemoveFromCart(item._id, size)
+                              }
+                              className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition duration-300 ml-2"
+                            >
+                              <MdDeleteOutline />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveProductFromCart(item._id)}
+                      className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition duration-300 mt-4 md:mt-0 md:ml-4 flex gap-2 items-center ml-auto"
+                    >
+                      <HiFolderRemove size={20} />
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-8 lg:mt-0 lg:ml-8 md:w-96 sm:w-96 lg:w-3/12 border-1 border-blue-300 p-2 h-fit rounded">
+                <div className=" p-4 bg-blue-100 rounded">
+                  <h2 className="text-xl font-bold mb-4 text-center">
+                    Order Details
+                  </h2>
+                  <p className="text-md font-bold mb-2">
+                    Subtotal: ${totalAmount.toFixed(2)}
+                  </p>
+                  <p className="text-md font-bold mb-2">
+                    Tax (18%): ${tax.toFixed(2)}
+                  </p>
+                  <p className="text-md font-bold mb-2">
+                    Delivery Charges: ${deliveryCharge.toFixed(2)}
+                  </p>
+                  <div className="border-t border-slate-600 mt-2 pt-2">
+                    <p className="text-xl font-bold">
+                      Grand Total: ${grandTotal.toFixed(2)}
+                    </p>
+                  </div>
+                  <Link
+                    to="/checkout"
+                    className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition duration-300 inline-block mt-4 w-full text-center"
+                  >
+                    Proceed to Checkout
+                  </Link>
                 </div>
-              ))}
-            </div>
-            <div className="mt-8 text-right">
-              <p className="text-2xl font-bold mb-4">
-                Total: ${totalAmount.toFixed(2)}
-              </p>
-              <Link
-                to="/checkout"
-                className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition duration-300 inline-block"
-              >
-                Proceed to Checkout
-              </Link>
+              </div>
             </div>
           </>
         )}

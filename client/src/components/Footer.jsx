@@ -80,9 +80,9 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        <div className="border-t border-gray-700 mt-6 pt-6 text-center">
+        <div className="border-t border-blue-700 mt-6 pt-6 text-center">
           <p className="text-gray-300">
-            &copy; 2024 Nice Casual. All rights reserved.
+            &copy; 2024 Style Maker. All rights reserved.
           </p>
         </div>
       </div>
