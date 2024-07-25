@@ -28,14 +28,14 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#F0EBE6] md:px-12 sm:px-8 py-2 shadow-md text-gray-700">
+    <nav className="bg-blue-400 md:px-12 sm:px-8 py-2 shadow-md text-gray-300 fixed w-full z-50 top-0 left-0">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-4">
           <img className="h-16 w-auto" src={logo} alt="Logo" />
         </Link>
 
         <div className="hidden md:flex items-center space-x-4">
-          <Link to="/" className="text-lg font-semibold">
+          <Link to="/" className="text-lg font-semibold hover:text-white">
             Home
           </Link>
           {userLogin ? (
@@ -88,14 +88,20 @@ const Navbar = () => {
               )}
             </div>
           ) : (
-            <Link to="/login" className="text-lg font-semibold">
+            <Link
+              to="/login"
+              className="text-lg font-semibold hover:text-white"
+            >
               Login
             </Link>
           )}
-          <Link to="/cart" className="relative text-lg font-semibold">
+          <Link
+            to="/cart"
+            className="relative text-lg font-semibold hover:text-white"
+          >
             <TiShoppingCart className="text-3xl" />
             {uniqueProductCount > 0 && (
-              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-400 rounded-full flex items-center justify-center text-white text-xs">
+              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
                 {uniqueProductCount}
               </div>
             )}
@@ -165,7 +171,7 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/login"
-                className="block px-4 py-2 text-lg font-semibold"
+                className="block px-4 py-2 text-lg font-semibold hover:text-white"
                 onClick={toggleMenu}
               >
                 Login
@@ -173,7 +179,7 @@ const Navbar = () => {
             )}
             <Link
               to="/cart"
-              className="relative block px-4 py-2 text-lg font-semibold"
+              className="relative block px-4 py-2 text-lg font-semibold hover:text-white"
               onClick={toggleMenu}
             >
               <TiShoppingCart className="text-3xl" />

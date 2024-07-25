@@ -147,7 +147,7 @@ const CartPage = () => {
                 ))}
               </div>
               <div className="mt-8 lg:mt-0 lg:ml-8 md:w-96 sm:w-96 lg:w-3/12 border-1 border-blue-300 p-2 h-fit rounded">
-                <div className=" p-4 bg-blue-100 rounded">
+                <div className=" p-4 bg-blue-100 rounded text-gray-600">
                   <h2 className="text-xl font-bold mb-4 text-center">
                     Order Details
                   </h2>
