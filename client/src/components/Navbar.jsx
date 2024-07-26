@@ -28,14 +28,14 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-400 md:px-12 sm:px-8 py-2 shadow-md text-gray-300 fixed w-full z-50 top-0 left-0">
+    <nav className="bg-blue-400 md:px-12 sm:px-8 py-2 shadow-md active: fixed w-full z-50 top-0 left-0">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-4">
           <img className="h-16 w-auto" src={logo} alt="Logo" />
         </Link>
 
         <div className="hidden md:flex items-center space-x-4">
-          <Link to="/" className="text-lg font-semibold hover:text-white">
+          <Link to="/" className="text-lg font-semibold hover:text-white ">
             Home
           </Link>
           {userLogin ? (

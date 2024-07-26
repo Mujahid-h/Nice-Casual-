@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 const ProductCard = ({ product }) => {
   return (
     <div
-      className="card shadow-md rounded-lg overflow-hidden bg-slate-300 w-64 transition-transform duration-300 hover:scale-102"
-      style={{ width: "18rem" }}
+      className="card shadow-md rounded-lg overflow-hidden bg-slate-300 w-fit transition-transform duration-300 hover:scale-102"
+      // style={{ width: "18rem" }}
     >
-      <div className="h-72 overflow-hidden p-1">
+      <div className="h-4/6 overflow-hidden p-1">
         <img
           className="w-full h-full  rounded"
           src={product.image}

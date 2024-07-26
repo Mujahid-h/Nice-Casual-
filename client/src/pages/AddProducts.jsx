@@ -84,7 +84,7 @@ const AddProduct = () => {
             <input
               type="file"
               onChange={handleImageChange}
-              className="w-full px-3 py-2 border rounded"
+              className="w-full px-3 py-2 "
               required
             />
           </div>
