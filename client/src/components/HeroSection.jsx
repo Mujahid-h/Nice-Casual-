@@ -6,11 +6,11 @@ const HeroSection = () => {
 
   return (
     <div
-      className="relative bg-no-repeat bg-cover h-[80vh] w-[80%] rounded-xl mx-auto mt-24"
+      className="relative bg-no-repeat bg-cover h-[80vh] w-[80%] rounded-xl mx-auto mt-40"
       style={{ backgroundImage: "url('./hero.png')" }}
     >
       <div className="absolute inset-0 bg-white opacity-20 z-10"></div>
-      <div className="container mx-auto flex flex-col items-center justify-center h-full text-black z-20 relative">
+      <div className="container mx-auto flex flex-col items-center justify-center h-full text-orange-300 z-20 relative">
         <h1 className="text-4xl md:text-6xl font-bold mb-4 text-center">
           Welcome to Our Store
         </h1>
