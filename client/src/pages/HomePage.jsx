@@ -64,7 +64,14 @@ const HomePage = () => {
               )}
             </div>
 
-            <div className="bg-gray-400 py-16 px-4 sm:px-6 lg:px-8 rounded-lg ">
+            <div
+              className="py-16 px-4 sm:px-6 lg:px-8 rounded-lg"
+              style={{
+                animation: "example 4s ease infinite",
+                backgroundSize: "200% 200%",
+                backgroundImage: "linear-gradient(to right, gray, white)",
+              }}
+            >
               <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-4">
                 Get in Touch
               </h2>
