@@ -1,13 +1,13 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import hero from "../assets/hero.png";
+import hero from "../assets/hero.jpg";
 
 const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
     <div
-      className="relative bg-no-repeat bg-cover h-[80vh] w-[80%] rounded-xl mx-auto mt-40"
+      className="relative bg-no-repeat bg-center bg-cover h-[90vh] w-[90%] rounded-xl mx-auto mt-40"
       style={{ backgroundImage: `url(${hero})` }}
     >
       <div className="absolute inset-0 bg-white opacity-20 z-10"></div>
