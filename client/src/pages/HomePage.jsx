@@ -7,6 +7,7 @@ import HeroSection from "../components/HeroSection";
 import DefaultLayout from "../components/DefaultLayout";
 import Spinner from "../components/Spinner";
 import Contact from "../components/Contact";
+import About from "../components/About";
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
@@ -40,6 +41,7 @@ const HomePage = () => {
       ) : (
         <>
           <HeroSection />
+          <About />
           <div className="container mx-auto p-4">
             <h1 className="text-gray-800 text-center font-bold my-8 text-4xl">
               Featured Products
