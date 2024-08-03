@@ -83,3 +83,7 @@
     animation: none;
   }
 }
+
+body {
+  background-color: rgb(167, 166, 166);
+}

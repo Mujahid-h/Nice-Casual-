@@ -27,7 +27,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center pb-10 px-4 sm:px-6 lg:px-8">
+    <div className="flex flex-col justify-center items-center pb-30 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">
         <p className="mb-8 text-center text-lg text-gray-600">
           Feel free to reach out to me for any questions or opportunities!
