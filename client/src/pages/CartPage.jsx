@@ -86,7 +86,7 @@ const CartPage = () => {
                       <h5 className="font-bold text-xl mb-2">{item.name}</h5>
                       <p className="text-slate-500 mb-2">{item.description}</p>
                       <p className="text-lg font-semibold mb-2">
-                        ${item.price}
+                        PKR. {item.price}
                       </p>
                       <div className="space-y-2 md:space-y-0 md:flex md:flex-wrap">
                         {Object.entries(item.sizes).map(([size, quantity]) => (
@@ -152,17 +152,17 @@ const CartPage = () => {
                     Order Details
                   </h2>
                   <p className="text-md font-bold mb-2">
-                    Subtotal: ${totalAmount.toFixed(2)}
+                    Subtotal: PKR. {totalAmount.toFixed(2)}
                   </p>
                   <p className="text-md font-bold mb-2">
-                    Tax (18%): ${tax.toFixed(2)}
+                    Tax (18%): PKR. {tax.toFixed(2)}
                   </p>
                   <p className="text-md font-bold mb-2">
-                    Delivery Charges: ${deliveryCharge.toFixed(2)}
+                    Delivery Charges: PKR. {deliveryCharge.toFixed(2)}
                   </p>
                   <div className="border-t border-slate-600 mt-2 pt-2">
                     <p className="text-xl font-bold">
-                      Grand Total: ${grandTotal.toFixed(2)}
+                      Grand Total: PKR. {grandTotal.toFixed(2)}
                     </p>
                   </div>
                   <Link
