@@ -4,10 +4,10 @@ import { Link } from "react-router-dom";
 const ProductCard = ({ product }) => {
   return (
     <div
-      className="card shadow-md rounded-lg overflow-hidden bg-slate-300 w-fit transition-transform duration-300 hover:scale-102"
+      className="card shadow-md rounded-lg overflow-hidden flex justify-center bg-slate-300 w-fit sm:max-w-96 transition-transform duration-300 hover:scale-102"
       // style={{ width: "18rem" }}
     >
-      <div className="h-4/6 overflow-hidden p-1">
+      <div className="md:h-5/6 lg:h-4/6 overflow-hidden p-1">
         <img
           className="w-full h-full  rounded"
           src={product.image}
@@ -23,7 +23,7 @@ const ProductCard = ({ product }) => {
         <div className="flex justify-center mb-2">
           <Link
             to={`/product/${product._id}`}
-            className="bg-blue-500 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-600 transition duration-300 w-full text-center"
+            className="bg-blue-500 text-white px-3 py-1.5  rounded text-sm my-2 hover:bg-blue-600 transition duration-300 w-full  text-center"
           >
             View Details
           </Link>
