@@ -6,8 +6,9 @@ const Spinner = () => {
     <div className="flex justify-center items-center w-full">
       <FidgetSpinner
         visible={true}
-        height="100"
-        width="100"
+        height="150" // Increased height
+        width="150" // Increased width
+        color="#1E3A8A" // Changed color to blue (Tailwind color: blue-900)
         ariaLabel="fidget-spinner-loading"
         wrapperStyle={{}}
         wrapperClass="fidget-spinner-wrapper"
