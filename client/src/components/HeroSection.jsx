@@ -7,10 +7,9 @@ const HeroSection = () => {
 
   return (
     <div
-      className="relative bg-no-repeat bg-center bg-cover min-h-[50vh] lg:h-[100vh] sm:h-[50vh] md:h-[50vh] w-[90%] rounded-xl mx-auto mt-40 flex items-end"
+      className="relative bg-no-repeat bg-center bg-cover min-h-[50vh] lg:h-[100vh] sm:h-[50vh] md:h-[50vh] w-[90%] rounded-xl mx-auto mt-12 flex items-end"
       style={{ backgroundImage: `url(${hero})` }}
     >
-      <div className="absolute inset-0 bg-black opacity-20 z-10"></div>
       <div className="relative mx-auto flex flex-col items-center justify-end pb-20 min-h-full text-gray-300 z-20">
         <h1 className="text-4xl md:text-6xl font-bold mb-4 text-center">
           Welcome to Our Store

@@ -6,7 +6,7 @@ const DefaultLayout = ({ children }) => {
   return (
     <>
       <Navbar />
-      <main className="min-h-[70vh]">{children}</main>
+      <main className="min-h-[70vh] pt-24">{children}</main>
       <Footer />
     </>
   );
