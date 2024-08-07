@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getProducts, deleteProduct } from "../api/productApi";
 import { getUsers, deleteUser } from "../api/userApi";
+import { getOrders, updateOrderStatus } from "../api/orderApi";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Spinner from "../components/Spinner";
@@ -10,12 +11,15 @@ const AdminPanel = ({ toggleUserView }) => {
   const [users, setUsers] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(false);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
   const { userInfo } = useSelector((state) => state.user);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchProducts();
     fetchUsers();
+    fetchOrders();
   }, []);
 
   const fetchProducts = async () => {
@@ -42,6 +46,26 @@ const AdminPanel = ({ toggleUserView }) => {
       console.log(error);
     }
     setLoadingUsers(false);
+  };
+
+  const fetchOrders = async () => {
+    setLoadingOrders(true);
+    try {
+      const fetchedOrders = await getOrders(userInfo.token);
+      setOrders(fetchedOrders);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoadingOrders(false);
+  };
+
+  const handleUpdateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await updateOrderStatus(orderId, newStatus, userInfo.token);
+      fetchOrders();
+    } catch (error) {
+      console.error("Error updating order status:", error);
+    }
   };
 
   const handleDeleteProduct = async (productId) => {
@@ -175,6 +199,63 @@ const AdminPanel = ({ toggleUserView }) => {
                       >
                         Delete
                       </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        <div className="overflow-x-auto">
+          <h2 className="text-gray-800 font-bold mb-2 text-xl text-center">
+            Orders
+          </h2>
+          {loadingOrders ? (
+            <Spinner />
+          ) : (
+            <table className="w-full bg-white border-collapse border border-gray-300">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="py-2 px-4 border text-center font-semibold">
+                    Order ID
+                  </th>
+                  <th className="py-2 px-4 border text-center font-semibold">
+                    Customer
+                  </th>
+                  <th className="py-2 px-4 border text-center font-semibold">
+                    Status
+                  </th>
+                  <th className="py-2 px-4 border text-center font-semibold">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map((order) => (
+                  <tr key={order._id} className="hover:bg-gray-50">
+                    <td className="py-2 px-4 border text-center">
+                      {order._id}
+                    </td>
+                    <td className="py-2 px-4 border text-center">
+                      {order.user.name}
+                    </td>
+                    <td className="py-2 px-4 border text-center">
+                      {order.status}
+                    </td>
+                    <td className="py-2 px-4 border text-center">
+                      <select
+                        value={order.status}
+                        onChange={(e) =>
+                          handleUpdateOrderStatus(order._id, e.target.value)
+                        }
+                        className="border rounded px-2 py-1"
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="shipped">Shipped</option>
+                        <option value="delivered">Delivered</option>
+                      </select>
                     </td>
                   </tr>
                 ))}
