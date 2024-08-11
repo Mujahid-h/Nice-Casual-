@@ -11,7 +11,9 @@ import { loadStripe } from "@stripe/stripe-js";
 import { clearCart } from "../redux/cartSlice";
 import { createOrder } from "../api/orderApi";
 
-const stripePromise = loadStripe("your_stripe_publishable_key");
+const stripePromise = loadStripe(
+  "pk_test_51PmDTFC80jaTZneL4fsAurFxdPnnynqTznp6aDtarTsaG8YBhynkRaRQhUCjcGDpJ2nbKvOpJnzYTIVOKSVvXy5n00PAvkfzeT"
+);
 
 const CheckoutForm = ({
   cartItems,

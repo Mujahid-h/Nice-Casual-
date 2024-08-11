@@ -82,11 +82,11 @@ const ProductDetailPage = () => {
     <DefaultLayout>
       <div className="container mx-auto p-4">
         <div className="flex flex-col lg:flex-row">
-          <div className="lg:w-1/2 mb-4 lg:mb-0 shadow-md rounded cursor-pointer hover:scale-90 transition-transform duration-300 ease-in-out">
+          <div className="lg:w-1/2 mb-4 lg:mb-0 mx-auto">
             <img
               src={product.image}
               alt={product.name}
-              className="w-full rounded shadow-xl"
+              className="lg:w-[80%] md:w-full sm:w-full rounded shadow-xl mx-auto hover:scale-110 transition-transform duration-300 ease-in-out"
             />
           </div>
 

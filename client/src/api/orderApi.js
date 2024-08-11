@@ -1,24 +1,41 @@
 import axios from "axios";
 
+const API = "http://localhost:5000/api";
+
 export const createOrder = async (orderData) => {
-  const response = await axios.post("/api/orders", orderData);
-  return response.data;
+  try {
+    const response = await axios.post(`${API}/orders`, orderData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating order:", error);
+    throw error;
+  }
 };
 
 export const getOrders = async (token) => {
-  const response = await axios.get("/api/orders", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
+  try {
+    const response = await axios.get(`${API}/orders`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    throw error;
+  }
 };
 
 export const updateOrderStatus = async (orderId, status, token) => {
-  const response = await axios.put(
-    `/api/orders/${orderId}/status`,
-    { status },
-    {
-      headers: { Authorization: `Bearer ${token}` },
-    }
-  );
-  return response.data;
+  try {
+    const response = await axios.put(
+      `${API}/orders/${orderId}/status`,
+      { status },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    throw error;
+  }
 };
