@@ -232,7 +232,7 @@ const CheckoutPage = () => {
           <div className="text-yellow-600 bg-yellow-100 p-4 rounded mb-4">
             If you're experiencing issues with payment processing, please ensure
             that any ad blockers or similar extensions are disabled for this
-            site.
+            site. Thank You
           </div>
 
           {/* ========================================= */}
