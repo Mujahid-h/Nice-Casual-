@@ -87,6 +87,13 @@ const CheckoutForm = ({
         </div>
       )}
       {error && <div className="text-red-500 mb-4">{error}</div>}
+      {error && (
+        <div className="text-yellow-600 bg-yellow-100 p-4 rounded mb-4">
+          If you're experiencing issues with payment processing, please ensure
+          that any ad blockers or similar extensions are disabled for this site.
+          Thank you.
+        </div>
+      )}
       <button
         type="submit"
         disabled={!stripe || processing}
@@ -226,16 +233,6 @@ const CheckoutPage = () => {
               <p>Price: PKR {item.price * item.quantity}</p>
             </div>
           ))}
-
-          {/* ========================================= */}
-
-          <div className="text-yellow-600 bg-yellow-100 p-4 rounded mb-4">
-            If you're experiencing issues with payment processing, please ensure
-            that any ad blockers or similar extensions are disabled for this
-            site. Thank You
-          </div>
-
-          {/* ========================================= */}
 
           <div className="font-bold text-xl mt-4 mb-4">
             Total: PKR {totalAmount}
