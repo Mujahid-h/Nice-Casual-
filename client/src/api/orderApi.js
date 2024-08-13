@@ -2,9 +2,14 @@ import axios from "axios";
 
 const API = "http://localhost:5000/api";
 
-export const createOrder = async (orderData) => {
+// API functions now expect a token parameter
+export const createOrder = async (orderData, token) => {
   try {
-    const response = await axios.post(`${API}/orders`, orderData);
+    const response = await axios.post(`${API}/orders`, orderData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   } catch (error) {
     console.error("Error creating order:", error);

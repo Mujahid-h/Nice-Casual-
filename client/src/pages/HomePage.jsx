@@ -67,7 +67,7 @@ const HomePage = () => {
             </div>
 
             <div
-              className="py-16 px-4 sm:px-6 w-[90%]] lg:px-8 rounded-lg"
+              className="py-16 px-4 sm:px-6 w-[100%]] lg:px-8 rounded-lg"
               style={{
                 animation: "example 4s ease infinite",
                 backgroundSize: "200% 200%",
@@ -77,7 +77,7 @@ const HomePage = () => {
               <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-4">
                 Get in Touch
               </h2>
-              <div className="max-w-3xl mx-auto">
+              <div className="w-full mx-auto">
                 <Contact />
               </div>
             </div>

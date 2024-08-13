@@ -27,6 +27,7 @@ const CheckoutForm = ({
   const [processing, setProcessing] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const token = useSelector((state) => state.user.userInfo?.token);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -35,45 +36,58 @@ const CheckoutForm = ({
     if (paymentMethod === "cod") {
       // Handle Cash on Delivery
       try {
-        const order = await createOrder({
-          items: cartItems,
-          totalAmount,
-          shippingDetails,
-          paymentMethod: "cod",
-        });
+        const order = await createOrder(
+          {
+            items: cartItems,
+            totalAmount,
+            shippingDetails,
+            paymentMethod: "cod",
+          },
+          token
+        );
         dispatch(clearCart());
         navigate(`/order/${order._id}`);
       } catch (error) {
+        console.error("Order creation failed:", error);
         setError("Failed to create order. Please try again.");
       }
     } else {
       // Handle card payment
       if (!stripe || !elements) {
+        setError("Stripe has not loaded yet.");
+        setProcessing(false);
         return;
       }
 
-      const { error, paymentMethod } = await stripe.createPaymentMethod({
-        type: "card",
-        card: elements.getElement(CardElement),
-      });
+      try {
+        const { error: stripeError, paymentMethod } =
+          await stripe.createPaymentMethod({
+            type: "card",
+            card: elements.getElement(CardElement),
+          });
 
-      if (error) {
-        setError(error.message);
-        setProcessing(false);
-      } else {
-        try {
-          const order = await createOrder({
+        if (stripeError) {
+          setError(stripeError.message);
+          setProcessing(false);
+          return;
+        }
+
+        const order = await createOrder(
+          {
             items: cartItems,
             totalAmount,
             shippingDetails,
             paymentMethod: "card",
             paymentMethodId: paymentMethod.id,
-          });
-          dispatch(clearCart());
-          navigate(`/order/${order._id}`);
-        } catch (error) {
-          setError("Payment failed. Please try again.");
-        }
+          },
+          token
+        );
+
+        dispatch(clearCart());
+        navigate(`/order/${order._id}`);
+      } catch (error) {
+        console.error("Payment failed:", error);
+        setError("Payment failed. Please try again.");
       }
     }
     setProcessing(false);
@@ -87,13 +101,6 @@ const CheckoutForm = ({
         </div>
       )}
       {error && <div className="text-red-500 mb-4">{error}</div>}
-      {error && (
-        <div className="text-yellow-600 bg-yellow-100 p-4 rounded mb-4">
-          If you're experiencing issues with payment processing, please ensure
-          that any ad blockers or similar extensions are disabled for this site.
-          Thank you.
-        </div>
-      )}
       <button
         type="submit"
         disabled={!stripe || processing}

@@ -1,5 +1,7 @@
 import Order from "../models/Order.js";
-import stripe from "stripe";
+// import stripe from "stripe";
+import Stripe from "stripe";
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Ensure you have this key in your .env file
 
 // Create new order
 export const createOrder = async (req, res) => {
@@ -15,20 +17,25 @@ export const createOrder = async (req, res) => {
     let paymentResult = {};
 
     if (paymentMethod === "card") {
-      // Process payment with Stripe
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: totalAmount * 100, // Stripe expects amount in cents
-        currency: "pkr",
-        payment_method: paymentMethodId,
-        confirm: true,
-      });
+      try {
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: totalAmount * 100, // Stripe expects amount in cents
+          currency: "pkr",
+          payment_method: paymentMethodId,
+          confirm: true,
+        });
 
-      paymentResult = {
-        id: paymentIntent.id,
-        status: paymentIntent.status,
-        update_time: new Date().toISOString(),
-        email_address: shippingDetails.email,
-      };
+        paymentResult = {
+          id: paymentIntent.id,
+          status: paymentIntent.status,
+          update_time: new Date().toISOString(),
+          email_address: shippingDetails.email,
+        };
+      } catch (error) {
+        return res
+          .status(500)
+          .json({ message: "Payment processing failed. Please try again." });
+      }
     }
 
     const order = new Order({
