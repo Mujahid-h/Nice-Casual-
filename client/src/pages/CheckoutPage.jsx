@@ -36,15 +36,16 @@ const CheckoutForm = ({
     if (paymentMethod === "cod") {
       // Handle Cash on Delivery
       try {
-        const order = await createOrder(
-          {
-            items: cartItems,
-            totalAmount,
-            shippingDetails,
-            paymentMethod: "cod",
-          },
-          token
-        );
+        const orderData = {
+          items: cartItems,
+          totalAmount,
+          shippingDetails,
+          paymentMethod: "cod",
+        };
+
+        console.log("Order Data:", orderData); // Add this line to debug
+        const order = await createOrder(orderData, token);
+
         dispatch(clearCart());
         navigate(`/order/${order._id}`);
       } catch (error) {

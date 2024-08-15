@@ -5,12 +5,17 @@ const API = "http://localhost:5000/api";
 // API functions now expect a token parameter
 export const createOrder = async (orderData, token) => {
   try {
-    const response = await axios.post(`${API}/orders`, orderData, {
+    const config = {
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-    });
-    return response.data;
+    };
+
+    console.log("Order Data:", orderData);
+    const { data } = await axios.post(`${API}/orders`, orderData, config);
+
+    return data;
   } catch (error) {
     console.error("Error creating order:", error);
     throw error;
