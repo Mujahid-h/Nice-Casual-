@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import {
@@ -8,108 +8,125 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { clearCart } from "../redux/cartSlice";
 import { createOrder } from "../api/orderApi";
+import { clearCart } from "../redux/cartSlice";
+import DefaultLayout from "../components/DefaultLayout";
 
+// Load Stripe outside of the component to avoid recreating the Stripe object
 const stripePromise = loadStripe(
   "pk_test_51PmDTFC80jaTZneL4fsAurFxdPnnynqTznp6aDtarTsaG8YBhynkRaRQhUCjcGDpJ2nbKvOpJnzYTIVOKSVvXy5n00PAvkfzeT"
 );
 
-const CheckoutForm = ({
-  cartItems,
-  totalAmount,
-  shippingDetails,
-  paymentMethod,
-}) => {
+const CheckoutForm = ({ totalAmount, shippingDetails, items }) => {
   const stripe = useStripe();
   const elements = useElements();
-  const [error, setError] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("card");
   const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const token = useSelector((state) => state.user.userInfo?.token);
+  const { user } = useSelector((state) => state.auth);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setProcessing(true);
 
-    if (paymentMethod === "cod") {
-      // Handle Cash on Delivery
-      try {
-        const orderData = {
-          items: cartItems,
-          totalAmount,
-          shippingDetails,
-          paymentMethod: "cod",
-        };
-
-        console.log("Order Data:", orderData); // Add this line to debug
-        const order = await createOrder(orderData, token);
-
-        dispatch(clearCart());
-        navigate(`/order/${order._id}`);
-      } catch (error) {
-        console.error("Order creation failed:", error);
-        setError("Failed to create order. Please try again.");
-      }
-    } else {
-      // Handle card payment
+    if (paymentMethod === "card") {
       if (!stripe || !elements) {
-        setError("Stripe has not loaded yet.");
         setProcessing(false);
         return;
       }
 
+      const { error, paymentMethod: stripePaymentMethod } =
+        await stripe.createPaymentMethod({
+          type: "card",
+          card: elements.getElement(CardElement),
+        });
+
+      if (error) {
+        setError(error.message);
+        setProcessing(false);
+        return;
+      }
+
+      // Create order with Stripe payment
       try {
-        const { error: stripeError, paymentMethod } =
-          await stripe.createPaymentMethod({
-            type: "card",
-            card: elements.getElement(CardElement),
-          });
-
-        if (stripeError) {
-          setError(stripeError.message);
-          setProcessing(false);
-          return;
-        }
-
         const order = await createOrder(
           {
-            items: cartItems,
-            totalAmount,
+            items,
             shippingDetails,
             paymentMethod: "card",
-            paymentMethodId: paymentMethod.id,
+            totalAmount,
+            paymentMethodId: stripePaymentMethod.id,
           },
-          token
+          user.token
         );
 
         dispatch(clearCart());
-        navigate(`/order/${order._id}`);
-      } catch (error) {
-        console.error("Payment failed:", error);
-        setError("Payment failed. Please try again.");
+        navigate("/order-confirmation", { state: { order } });
+      } catch (err) {
+        setError(
+          "An error occurred while processing your payment. Please try again."
+        );
+      }
+    } else {
+      // Create order with COD
+      try {
+        const order = await createOrder(
+          {
+            items,
+            shippingDetails,
+            paymentMethod: "cod",
+            totalAmount,
+          },
+          user.token
+        );
+
+        dispatch(clearCart());
+        navigate("/order-confirmation", { state: { order } });
+      } catch (err) {
+        setError(
+          "An error occurred while placing your order. Please try again."
+        );
       }
     }
+
     setProcessing(false);
   };
 
   return (
     <form onSubmit={handleSubmit}>
+      <div>
+        <label>
+          <input
+            type="radio"
+            value="card"
+            checked={paymentMethod === "card"}
+            onChange={() => setPaymentMethod("card")}
+          />
+          Pay with Card
+        </label>
+        <label>
+          <input
+            type="radio"
+            value="cod"
+            checked={paymentMethod === "cod"}
+            onChange={() => setPaymentMethod("cod")}
+          />
+          Cash on Delivery
+        </label>
+      </div>
+
       {paymentMethod === "card" && (
-        <div className="mb-4">
+        <div>
           <CardElement />
         </div>
       )}
-      {error && <div className="text-red-500 mb-4">{error}</div>}
-      <button
-        type="submit"
-        disabled={!stripe || processing}
-        className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition duration-300 w-full"
-      >
-        {processing
-          ? "Processing..."
-          : `Pay ${paymentMethod === "cod" ? "on Delivery" : "Now"}`}
+
+      {error && <div>{error}</div>}
+
+      <button type="submit" disabled={processing}>
+        {processing ? "Processing..." : "Place Order"}
       </button>
     </form>
   );
@@ -117,145 +134,85 @@ const CheckoutForm = ({
 
 const CheckoutPage = () => {
   const { cartItems } = useSelector((state) => state.cart);
-  const { userInfo } = useSelector((state) => state.user);
   const [shippingDetails, setShippingDetails] = useState({
-    name: userInfo?.name || "",
-    email: userInfo?.email || "",
+    name: "",
+    email: "",
     phone1: "",
     phone2: "",
     address1: "",
     address2: "",
   });
-  const [paymentMethod, setPaymentMethod] = useState("card");
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!userInfo) {
-      navigate("/login?redirect=checkout");
-    }
-  }, [userInfo, navigate]);
 
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
+  const tax = totalAmount * 0.18;
+  const deliveryCharge = 250;
+  const grandTotal = totalAmount + tax + deliveryCharge;
 
-  const handleInputChange = (e) => {
+  const handleShippingDetailsChange = (e) => {
     setShippingDetails({ ...shippingDetails, [e.target.name]: e.target.value });
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Checkout</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Shipping Details</h2>
-          <form>
-            <input
-              type="text"
-              name="name"
-              value={shippingDetails.name}
-              onChange={handleInputChange}
-              placeholder="Name"
-              className="w-full p-2 mb-4 border rounded"
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              value={shippingDetails.email}
-              onChange={handleInputChange}
-              placeholder="Email"
-              className="w-full p-2 mb-4 border rounded"
-              required
-            />
-            <input
-              type="tel"
-              name="phone1"
-              value={shippingDetails.phone1}
-              onChange={handleInputChange}
-              placeholder="Phone 1"
-              className="w-full p-2 mb-4 border rounded"
-              required
-            />
-            <input
-              type="tel"
-              name="phone2"
-              value={shippingDetails.phone2}
-              onChange={handleInputChange}
-              placeholder="Phone 2 (optional)"
-              className="w-full p-2 mb-4 border rounded"
-            />
-            <input
-              type="text"
-              name="address1"
-              value={shippingDetails.address1}
-              onChange={handleInputChange}
-              placeholder="Address 1"
-              className="w-full p-2 mb-4 border rounded"
-              required
-            />
-            <input
-              type="text"
-              name="address2"
-              value={shippingDetails.address2}
-              onChange={handleInputChange}
-              placeholder="Address 2 (optional)"
-              className="w-full p-2 mb-4 border rounded"
-            />
-          </form>
-          <h2 className="text-2xl font-bold mb-4">Payment Method</h2>
-          <div className="mb-4">
-            <label className="inline-flex items-center mr-4">
+    <DefaultLayout>
+      <div className="container mx-auto p-4">
+        <h1 className="text-3xl font-bold mb-4">Checkout</h1>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Shipping Details</h2>
+            <form>
+              {/* Add input fields for shipping details */}
               <input
-                type="radio"
-                value="card"
-                checked={paymentMethod === "card"}
-                onChange={() => setPaymentMethod("card")}
-                className="form-radio"
+                type="text"
+                name="name"
+                value={shippingDetails.name}
+                onChange={handleShippingDetailsChange}
+                placeholder="Full Name"
+                required
               />
-              <span className="ml-2">Card</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                value="cod"
-                checked={paymentMethod === "cod"}
-                onChange={() => setPaymentMethod("cod")}
-                className="form-radio"
-              />
-              <span className="ml-2">Cash on Delivery</span>
-            </label>
+              {/* Add more input fields for email, phone, address, etc. */}
+            </form>
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
+            {cartItems.map((item) => (
+              <div key={`${item._id}-${item.size}`} className="mb-2">
+                <span>
+                  {item.name} (Size: {item.size})
+                </span>
+                <span className="float-right">
+                  {item.quantity} x PKR {item.price} = PKR{" "}
+                  {item.quantity * item.price}
+                </span>
+              </div>
+            ))}
+            <div className="mt-4">
+              <p>Subtotal: PKR {totalAmount.toFixed(2)}</p>
+              <p>Tax (18%): PKR {tax.toFixed(2)}</p>
+              <p>Delivery Charges: PKR {deliveryCharge.toFixed(2)}</p>
+              <p className="font-bold">
+                Grand Total: PKR {grandTotal.toFixed(2)}
+              </p>
+            </div>
           </div>
         </div>
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
-          {cartItems.map((item) => (
-            <div
-              key={`${item._id}-${item.size}`}
-              className="mb-4 p-4 bg-gray-100 rounded"
-            >
-              <h3 className="font-bold">{item.name}</h3>
-              <p>Size: {item.size}</p>
-              <p>Quantity: {item.quantity}</p>
-              <p>Price: PKR {item.price * item.quantity}</p>
-            </div>
-          ))}
 
-          <div className="font-bold text-xl mt-4 mb-4">
-            Total: PKR {totalAmount}
-          </div>
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">Payment</h2>
           <Elements stripe={stripePromise}>
             <CheckoutForm
-              cartItems={cartItems}
-              totalAmount={totalAmount}
+              totalAmount={grandTotal}
               shippingDetails={shippingDetails}
-              paymentMethod={paymentMethod}
+              items={cartItems}
             />
           </Elements>
         </div>
       </div>
-    </div>
+    </DefaultLayout>
   );
 };
 

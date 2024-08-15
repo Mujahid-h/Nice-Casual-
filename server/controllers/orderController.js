@@ -15,14 +15,17 @@ export const createOrder = async (req, res) => {
     } = req.body;
 
     let paymentResult = {};
+    let orderStatus = "pending";
 
     if (paymentMethod === "card") {
       try {
+        // Create a PaymentIntent with the order amount and currency
         const paymentIntent = await stripe.paymentIntents.create({
-          amount: totalAmount * 100, // Stripe expects amount in cents
+          amount: Math.round(totalAmount * 100), // Stripe expects amount in cents
           currency: "pkr",
           payment_method: paymentMethodId,
           confirm: true,
+          description: `Order for user ${req.user._id}`,
         });
 
         paymentResult = {
@@ -31,28 +34,48 @@ export const createOrder = async (req, res) => {
           update_time: new Date().toISOString(),
           email_address: shippingDetails.email,
         };
+
+        // If payment is successful, set order status to processing
+        if (paymentIntent.status === "succeeded") {
+          orderStatus = "processing";
+        }
       } catch (error) {
+        console.error("Stripe payment failed:", error);
         return res
-          .status(500)
-          .json({ message: "Payment processing failed. Please try again." });
+          .status(400)
+          .json({ message: "Payment failed", error: error.message });
       }
+    } else if (paymentMethod === "cod") {
+      // For COD, we'll keep the status as pending
+      orderStatus = "pending";
+    } else {
+      return res.status(400).json({ message: "Invalid payment method" });
     }
 
     const order = new Order({
       user: req.user._id,
-      items,
+      items: items.map((item) => ({
+        product: item._id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        size: item.size,
+      })),
       shippingDetails,
       paymentMethod,
       paymentResult,
       totalAmount,
-      status: paymentMethod === "cod" ? "pending" : "processing",
+      status: orderStatus,
     });
 
     const createdOrder = await order.save();
 
     res.status(201).json(createdOrder);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Order creation failed:", error);
+    res
+      .status(400)
+      .json({ message: "Order creation failed", error: error.message });
   }
 };
 
