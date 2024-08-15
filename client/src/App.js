@@ -8,6 +8,7 @@ import EditProduct from "./pages/EditProduct";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import SuccessPage from "./pages/SuccessPage";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
           <Route path="/products/edit/:id" element={<EditProduct />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/success" element={<SuccessPage />} />
         </Routes>
       </Router>
     </>
