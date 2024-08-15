@@ -105,3 +105,14 @@ export const updateUser = async (id, userData, token) => {
     throw error.response?.data?.message || "Updating user failed";
   }
 };
+
+export const checkAuthStatus = async () => {
+  const userInfo = localStorage.getItem("userInfo");
+  if (userInfo) {
+    const parsedUserInfo = JSON.parse(userInfo);
+    // You might want to validate the token with your backend here
+    // For now, we'll just return the stored user info
+    return parsedUserInfo;
+  }
+  return null;
+};
