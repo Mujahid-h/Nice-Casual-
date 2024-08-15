@@ -1,67 +1,75 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
   CardElement,
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import { createOrder } from "../redux/orderSlice";
 import { clearCart } from "../redux/cartSlice";
-import { createOrder } from "../api/orderApi";
+import DefaultLayout from "../components/DefaultLayout";
 
+// Load your Stripe public key from environment variables
 const stripePromise = loadStripe(
   "pk_test_51PmDTFC80jaTZneL4fsAurFxdPnnynqTznp6aDtarTsaG8YBhynkRaRQhUCjcGDpJ2nbKvOpJnzYTIVOKSVvXy5n00PAvkfzeT"
 );
 
-const CheckoutForm = ({
-  cartItems,
-  totalAmount,
-  shippingDetails,
-  paymentMethod,
-}) => {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [error, setError] = useState(null);
-  const [processing, setProcessing] = useState(false);
+const CheckoutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const token = useSelector((state) => state.user.userInfo?.token);
+  const { cartItems } = useSelector((state) => state.cart);
+  const { userInfo } = useSelector((state) => state.user); // Adjust according to your userInfo slice
+  const [deliveryDetails, setDeliveryDetails] = useState({
+    name: "",
+    email: "",
+    phone1: "",
+    phone2: "",
+    country: "",
+    city: "",
+    state: "",
+    address1: "",
+    address2: "",
+  });
+  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [error, setError] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setProcessing(true);
+  const stripe = useStripe();
+  const elements = useElements();
 
-    if (paymentMethod === "cod") {
-      // Handle Cash on Delivery
-      try {
-        const orderData = {
-          items: cartItems,
-          totalAmount,
-          shippingDetails,
-          paymentMethod: "cod",
-        };
+  useEffect(() => {
+    if (!userInfo) {
+      navigate("/login"); // Redirect to login if userInfo is not logged in
+    }
+  }, [userInfo, navigate]);
 
-        console.log("Order Data:", orderData); // Add this line to debug
-        const order = await createOrder(orderData, token);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setDeliveryDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
 
-        dispatch(clearCart());
-        navigate(`/order/${order._id}`);
-      } catch (error) {
-        console.error("Order creation failed:", error);
-        setError("Failed to create order. Please try again.");
-      }
-    } else {
-      // Handle card payment
-      if (!stripe || !elements) {
-        setError("Stripe has not loaded yet.");
-        setProcessing(false);
-        return;
-      }
+  const handlePaymentMethodChange = (e) => {
+    setPaymentMethod(e.target.value);
+  };
 
-      try {
-        const { error: stripeError, paymentMethod } =
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsProcessing(true);
+
+    try {
+      if (paymentMethod === "card") {
+        if (!stripe || !elements) {
+          setError("Stripe has not been loaded properly.");
+          return;
+        }
+
+        const { error: stripeError, paymentMethod: stripePaymentMethod } =
           await stripe.createPaymentMethod({
             type: "card",
             card: elements.getElement(CardElement),
@@ -69,194 +77,216 @@ const CheckoutForm = ({
 
         if (stripeError) {
           setError(stripeError.message);
-          setProcessing(false);
+          setIsProcessing(false);
           return;
         }
 
-        const order = await createOrder(
-          {
-            items: cartItems,
-            totalAmount,
-            shippingDetails,
-            paymentMethod: "card",
-            paymentMethodId: paymentMethod.id,
-          },
-          token
-        );
+        const orderData = {
+          items: cartItems,
+          shippingDetails: deliveryDetails,
+          paymentMethod: "card",
+          paymentMethodId: stripePaymentMethod.id,
+          totalAmount: calculateTotal(),
+        };
 
+        await dispatch(createOrder(orderData, userInfo.token));
         dispatch(clearCart());
-        navigate(`/order/${order._id}`);
-      } catch (error) {
-        console.error("Payment failed:", error);
-        setError("Payment failed. Please try again.");
+        navigate("/success");
+      } else {
+        const orderData = {
+          items: cartItems,
+          shippingDetails: deliveryDetails,
+          paymentMethod: "cod",
+          totalAmount: calculateTotal(),
+        };
+
+        await dispatch(createOrder(orderData, userInfo.token));
+        dispatch(clearCart());
+        navigate("/success");
       }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsProcessing(false);
     }
-    setProcessing(false);
+  };
+
+  const calculateTotal = () => {
+    const totalAmount = cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+    const tax = totalAmount * 0.18;
+    const deliveryCharge = 250;
+    return totalAmount + tax + deliveryCharge;
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {paymentMethod === "card" && (
-        <div className="mb-4">
-          <CardElement />
-        </div>
-      )}
-      {error && <div className="text-red-500 mb-4">{error}</div>}
-      <button
-        type="submit"
-        disabled={!stripe || processing}
-        className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition duration-300 w-full"
-      >
-        {processing
-          ? "Processing..."
-          : `Pay ${paymentMethod === "cod" ? "on Delivery" : "Now"}`}
-      </button>
-    </form>
-  );
-};
+    <DefaultLayout>
+      <div className="container mx-auto p-4">
+        <h1 className="text-gray-800 text-center font-bold text-3xl mb-4">
+          Checkout
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-2">Order Summary</h2>
+            {cartItems.map((item) => (
+              <div key={item._id} className="bg-gray-200 p-4 rounded mb-4">
+                <h3 className="text-lg font-bold">{item.name}</h3>
+                <p className="text-sm">Price: PKR {item.price}</p>
+                <p className="text-sm">Quantity: {item.quantity}</p>
+                {item.sizes &&
+                  Object.entries(item.sizes).map(([size, quantity]) => (
+                    <p key={size} className="text-sm">
+                      Size: {size} - {quantity} pcs
+                    </p>
+                  ))}
+              </div>
+            ))}
+          </div>
 
-const CheckoutPage = () => {
-  const { cartItems } = useSelector((state) => state.cart);
-  const { userInfo } = useSelector((state) => state.user);
-  const [shippingDetails, setShippingDetails] = useState({
-    name: userInfo?.name || "",
-    email: userInfo?.email || "",
-    phone1: "",
-    phone2: "",
-    address1: "",
-    address2: "",
-  });
-  const [paymentMethod, setPaymentMethod] = useState("card");
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!userInfo) {
-      navigate("/login?redirect=checkout");
-    }
-  }, [userInfo, navigate]);
-
-  const totalAmount = cartItems.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-
-  const handleInputChange = (e) => {
-    setShippingDetails({ ...shippingDetails, [e.target.name]: e.target.value });
-  };
-
-  return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Checkout</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Shipping Details</h2>
-          <form>
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold mb-2">Delivery Details</h2>
             <input
               type="text"
               name="name"
-              value={shippingDetails.name}
-              onChange={handleInputChange}
               placeholder="Name"
-              className="w-full p-2 mb-4 border rounded"
+              value={deliveryDetails.name}
+              onChange={handleInputChange}
+              className="block w-full p-2 border border-gray-300 rounded mb-2"
               required
             />
             <input
               type="email"
               name="email"
-              value={shippingDetails.email}
-              onChange={handleInputChange}
               placeholder="Email"
-              className="w-full p-2 mb-4 border rounded"
+              value={deliveryDetails.email}
+              onChange={handleInputChange}
+              className="block w-full p-2 border border-gray-300 rounded mb-2"
               required
             />
             <input
-              type="tel"
+              type="text"
               name="phone1"
-              value={shippingDetails.phone1}
-              onChange={handleInputChange}
               placeholder="Phone 1"
-              className="w-full p-2 mb-4 border rounded"
+              value={deliveryDetails.phone1}
+              onChange={handleInputChange}
+              className="block w-full p-2 border border-gray-300 rounded mb-2"
               required
             />
             <input
-              type="tel"
+              type="text"
               name="phone2"
-              value={shippingDetails.phone2}
+              placeholder="Phone 2"
+              value={deliveryDetails.phone2}
               onChange={handleInputChange}
-              placeholder="Phone 2 (optional)"
-              className="w-full p-2 mb-4 border rounded"
+              className="block w-full p-2 border border-gray-300 rounded mb-2"
+            />
+            <input
+              type="text"
+              name="country"
+              placeholder="Country"
+              value={deliveryDetails.country}
+              onChange={handleInputChange}
+              className="block w-full p-2 border border-gray-300 rounded mb-2"
+              required
+            />
+            <input
+              type="text"
+              name="city"
+              placeholder="City"
+              value={deliveryDetails.city}
+              onChange={handleInputChange}
+              className="block w-full p-2 border border-gray-300 rounded mb-2"
+              required
+            />
+            <input
+              type="text"
+              name="state"
+              placeholder="State"
+              value={deliveryDetails.state}
+              onChange={handleInputChange}
+              className="block w-full p-2 border border-gray-300 rounded mb-2"
+              required
             />
             <input
               type="text"
               name="address1"
-              value={shippingDetails.address1}
+              placeholder="Address Line 1"
+              value={deliveryDetails.address1}
               onChange={handleInputChange}
-              placeholder="Address 1"
-              className="w-full p-2 mb-4 border rounded"
+              className="block w-full p-2 border border-gray-300 rounded mb-2"
               required
             />
             <input
               type="text"
               name="address2"
-              value={shippingDetails.address2}
+              placeholder="Address Line 2"
+              value={deliveryDetails.address2}
               onChange={handleInputChange}
-              placeholder="Address 2 (optional)"
-              className="w-full p-2 mb-4 border rounded"
+              className="block w-full p-2 border border-gray-300 rounded mb-2"
             />
-          </form>
-          <h2 className="text-2xl font-bold mb-4">Payment Method</h2>
+          </div>
+
           <div className="mb-4">
-            <label className="inline-flex items-center mr-4">
+            <h2 className="text-xl font-semibold mb-2">Payment Method</h2>
+            <div className="flex items-center mb-2">
               <input
                 type="radio"
+                id="cash"
+                name="paymentMethod"
+                value="cash"
+                checked={paymentMethod === "cash"}
+                onChange={handlePaymentMethodChange}
+                className="mr-2"
+              />
+              <label htmlFor="cash">Cash on Delivery</label>
+            </div>
+            <div className="flex items-center mb-2">
+              <input
+                type="radio"
+                id="card"
+                name="paymentMethod"
                 value="card"
                 checked={paymentMethod === "card"}
-                onChange={() => setPaymentMethod("card")}
-                className="form-radio"
+                onChange={handlePaymentMethodChange}
+                className="mr-2"
               />
-              <span className="ml-2">Card</span>
-            </label>
-            <label className="inline-flex items-center">
-              <input
-                type="radio"
-                value="cod"
-                checked={paymentMethod === "cod"}
-                onChange={() => setPaymentMethod("cod")}
-                className="form-radio"
-              />
-              <span className="ml-2">Cash on Delivery</span>
-            </label>
-          </div>
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
-          {cartItems.map((item) => (
-            <div
-              key={`${item._id}-${item.size}`}
-              className="mb-4 p-4 bg-gray-100 rounded"
-            >
-              <h3 className="font-bold">{item.name}</h3>
-              <p>Size: {item.size}</p>
-              <p>Quantity: {item.quantity}</p>
-              <p>Price: PKR {item.price * item.quantity}</p>
+              <label htmlFor="card">Card Payment</label>
             </div>
-          ))}
-
-          <div className="font-bold text-xl mt-4 mb-4">
-            Total: PKR {totalAmount}
+            {paymentMethod === "card" && (
+              <div className="mt-4">
+                <label htmlFor="card-element" className="block mb-2">
+                  Card Details
+                </label>
+                <CardElement
+                  id="card-element"
+                  className="p-2 border border-gray-300 rounded"
+                />
+              </div>
+            )}
           </div>
-          <Elements stripe={stripePromise}>
-            <CheckoutForm
-              cartItems={cartItems}
-              totalAmount={totalAmount}
-              shippingDetails={shippingDetails}
-              paymentMethod={paymentMethod}
-            />
-          </Elements>
-        </div>
+
+          {error && <p className="text-red-500">{error}</p>}
+          <div className="mt-4">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition duration-300 w-full"
+              disabled={isProcessing}
+            >
+              {isProcessing ? "Processing..." : "Place Order"}
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
+    </DefaultLayout>
   );
 };
 
-export default CheckoutPage;
+const CheckoutStripe = () => (
+  <Elements stripe={stripePromise}>
+    <CheckoutPage />
+  </Elements>
+);
+
+export default CheckoutStripe;
