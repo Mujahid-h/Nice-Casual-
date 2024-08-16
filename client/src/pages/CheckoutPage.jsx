@@ -1,27 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { loadStripe } from "@stripe/stripe-js";
-import {
-  Elements,
-  CardElement,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js";
-import { createOrder } from "../redux/orderSlice";
-import { clearCart } from "../redux/cartSlice";
-import DefaultLayout from "../components/DefaultLayout";
-
-// Load your Stripe public key from environment variables
-const stripePromise = loadStripe(
-  "pk_test_51PmDTFC80jaTZneL4fsAurFxdPnnynqTznp6aDtarTsaG8YBhynkRaRQhUCjcGDpJ2nbKvOpJnzYTIVOKSVvXy5n00PAvkfzeT"
-);
+import { useDispatch, useSelector } from "react-redux";
+import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
+import { createOrder as reduxCreateOrder } from "../redux/orderSlice"; // Import the Redux action
+import { clearCart } from "../redux/cartSlice"; // Assuming cart actions exist
 
 const CheckoutPage = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const stripe = useStripe();
+  const elements = useElements();
+
   const { cartItems } = useSelector((state) => state.cart);
-  const { userInfo } = useSelector((state) => state.user); // Adjust according to your userInfo slice
+  const { userInfo } = useSelector((state) => state.user);
+
   const [deliveryDetails, setDeliveryDetails] = useState({
     name: "",
     email: "",
@@ -33,16 +25,13 @@ const CheckoutPage = () => {
     address1: "",
     address2: "",
   });
-  const [paymentMethod, setPaymentMethod] = useState("cash");
+  const [paymentMode, setPaymentMode] = useState("card");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  const stripe = useStripe();
-  const elements = useElements();
 
   useEffect(() => {
     if (!userInfo) {
-      navigate("/login"); // Redirect to login if userInfo is not logged in
+      navigate("/login");
     }
   }, [userInfo, navigate]);
 
@@ -54,239 +43,147 @@ const CheckoutPage = () => {
     }));
   };
 
-  const handlePaymentMethodChange = (e) => {
-    setPaymentMethod(e.target.value);
+  const handlePaymentModeChange = (e) => {
+    setPaymentMode(e.target.value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsProcessing(true);
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setLoading(true);
 
     try {
-      if (paymentMethod === "card") {
-        if (!stripe || !elements) {
-          setError("Stripe has not been loaded properly.");
+      let paymentMethodId = "";
+      if (paymentMode === "card") {
+        const { error, paymentMethod } = await stripe.createPaymentMethod({
+          type: "card",
+          card: elements.getElement(CardElement),
+        });
+
+        if (error) {
+          setError(error.message);
+          setLoading(false);
           return;
         }
-
-        const { error: stripeError, paymentMethod: stripePaymentMethod } =
-          await stripe.createPaymentMethod({
-            type: "card",
-            card: elements.getElement(CardElement),
-          });
-
-        if (stripeError) {
-          setError(stripeError.message);
-          setIsProcessing(false);
-          return;
-        }
-
-        const orderData = {
-          items: cartItems,
-          shippingDetails: deliveryDetails,
-          paymentMethod: "card",
-          paymentMethodId: stripePaymentMethod.id,
-          totalAmount: calculateTotal(),
-        };
-
-        await dispatch(createOrder(orderData, userInfo.token));
-        dispatch(clearCart());
-        navigate("/success");
-      } else {
-        const orderData = {
-          items: cartItems,
-          shippingDetails: deliveryDetails,
-          paymentMethod: "cod",
-          totalAmount: calculateTotal(),
-        };
-
-        await dispatch(createOrder(orderData, userInfo.token));
-        dispatch(clearCart());
-        navigate("/success");
+        paymentMethodId = paymentMethod.id;
       }
-    } catch (err) {
-      setError(err.message);
+
+      // Prepare order data
+      const orderData = {
+        items: cartItems,
+        deliveryDetails,
+        paymentMode,
+        paymentMethodId,
+      };
+
+      // Save the order in Redux store
+      dispatch(reduxCreateOrder(orderData));
+
+      // Clear the cart
+      dispatch(clearCart());
+
+      // Navigate to success page
+      navigate("/success");
+    } catch (error) {
+      setError(
+        "An error occurred while processing your order. Please try again."
+      );
+      console.error(error);
     } finally {
-      setIsProcessing(false);
+      setLoading(false);
     }
   };
 
-  const calculateTotal = () => {
-    const totalAmount = cartItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
-    const tax = totalAmount * 0.18;
-    const deliveryCharge = 250;
-    return totalAmount + tax + deliveryCharge;
-  };
+  // const calculateTotalAmount = () => {
+  //   return cartItems.reduce(
+  //     (total, item) => total + item.price * item.quantity,
+  //     0
+  //   );
+  // };
 
   return (
-    <DefaultLayout>
-      <div className="container mx-auto p-4">
-        <h1 className="text-gray-800 text-center font-bold text-3xl mb-4">
-          Checkout
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-2">Order Summary</h2>
-            {cartItems.map((item) => (
-              <div key={item._id} className="bg-gray-200 p-4 rounded mb-4">
-                <h3 className="text-lg font-bold">{item.name}</h3>
-                <p className="text-sm">Price: PKR {item.price}</p>
-                <p className="text-sm">Quantity: {item.quantity}</p>
-                {item.sizes &&
-                  Object.entries(item.sizes).map(([size, quantity]) => (
-                    <p key={size} className="text-sm">
-                      Size: {size} - {quantity} pcs
-                    </p>
-                  ))}
-              </div>
-            ))}
-          </div>
-
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-2">Delivery Details</h2>
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              value={deliveryDetails.name}
-              onChange={handleInputChange}
-              className="block w-full p-2 border border-gray-300 rounded mb-2"
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={deliveryDetails.email}
-              onChange={handleInputChange}
-              className="block w-full p-2 border border-gray-300 rounded mb-2"
-              required
-            />
-            <input
-              type="text"
-              name="phone1"
-              placeholder="Phone 1"
-              value={deliveryDetails.phone1}
-              onChange={handleInputChange}
-              className="block w-full p-2 border border-gray-300 rounded mb-2"
-              required
-            />
-            <input
-              type="text"
-              name="phone2"
-              placeholder="Phone 2"
-              value={deliveryDetails.phone2}
-              onChange={handleInputChange}
-              className="block w-full p-2 border border-gray-300 rounded mb-2"
-            />
-            <input
-              type="text"
-              name="country"
-              placeholder="Country"
-              value={deliveryDetails.country}
-              onChange={handleInputChange}
-              className="block w-full p-2 border border-gray-300 rounded mb-2"
-              required
-            />
-            <input
-              type="text"
-              name="city"
-              placeholder="City"
-              value={deliveryDetails.city}
-              onChange={handleInputChange}
-              className="block w-full p-2 border border-gray-300 rounded mb-2"
-              required
-            />
-            <input
-              type="text"
-              name="state"
-              placeholder="State"
-              value={deliveryDetails.state}
-              onChange={handleInputChange}
-              className="block w-full p-2 border border-gray-300 rounded mb-2"
-              required
-            />
-            <input
-              type="text"
-              name="address1"
-              placeholder="Address Line 1"
-              value={deliveryDetails.address1}
-              onChange={handleInputChange}
-              className="block w-full p-2 border border-gray-300 rounded mb-2"
-              required
-            />
-            <input
-              type="text"
-              name="address2"
-              placeholder="Address Line 2"
-              value={deliveryDetails.address2}
-              onChange={handleInputChange}
-              className="block w-full p-2 border border-gray-300 rounded mb-2"
-            />
-          </div>
-
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold mb-2">Payment Method</h2>
-            <div className="flex items-center mb-2">
-              <input
-                type="radio"
-                id="cash"
-                name="paymentMethod"
-                value="cash"
-                checked={paymentMethod === "cash"}
-                onChange={handlePaymentMethodChange}
-                className="mr-2"
-              />
-              <label htmlFor="cash">Cash on Delivery</label>
+    <div className="container mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Checkout</h1>
+      {error && <div className="text-red-500 mb-4">{error}</div>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="bg-white p-4 rounded shadow-md mb-4">
+          <h2 className="text-xl font-semibold mb-2">Order Summary</h2>
+          {cartItems.map((item) => (
+            <div key={item.id} className="border-b border-gray-200 pb-2 mb-2">
+              <div className="font-medium">{item.name}</div>
+              <div>Size: {item.size}</div>
+              <div>Price: PKR. {item.price.toFixed(2)}</div>
+              <div>Quantity: {item.quantity}</div>
             </div>
-            <div className="flex items-center mb-2">
-              <input
-                type="radio"
-                id="card"
-                name="paymentMethod"
-                value="card"
-                checked={paymentMethod === "card"}
-                onChange={handlePaymentMethodChange}
-                className="mr-2"
-              />
-              <label htmlFor="card">Card Payment</label>
-            </div>
-            {paymentMethod === "card" && (
-              <div className="mt-4">
-                <label htmlFor="card-element" className="block mb-2">
-                  Card Details
+          ))}
+        </div>
+        <div className="bg-white p-4 rounded shadow-md mb-4">
+          <h2 className="text-xl font-semibold mb-2">Delivery Details</h2>
+          <div className="space-y-2">
+            {Object.keys(deliveryDetails).map((key) => (
+              <div key={key} className="flex flex-col">
+                <label htmlFor={key} className="font-medium">
+                  {key.charAt(0).toUpperCase() + key.slice(1)}
                 </label>
-                <CardElement
-                  id="card-element"
+                <input
+                  id={key}
+                  name={key}
+                  type="text"
+                  value={deliveryDetails[key]}
+                  onChange={handleInputChange}
                   className="p-2 border border-gray-300 rounded"
                 />
               </div>
-            )}
+            ))}
           </div>
-
-          {error && <p className="text-red-500">{error}</p>}
-          <div className="mt-4">
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition duration-300 w-full"
-              disabled={isProcessing}
-            >
-              {isProcessing ? "Processing..." : "Place Order"}
-            </button>
+        </div>
+        <div className="bg-white p-4 rounded shadow-md mb-4">
+          <h2 className="text-xl font-semibold mb-2">Payment Method</h2>
+          <div className="flex items-center mb-2">
+            <input
+              type="radio"
+              id="cash"
+              name="paymentMode"
+              value="cash"
+              checked={paymentMode === "cash"}
+              onChange={handlePaymentModeChange}
+              className="mr-2"
+            />
+            <label htmlFor="cash" className="mr-4">
+              Cash on Delivery
+            </label>
+            <input
+              type="radio"
+              id="card"
+              name="paymentMode"
+              value="card"
+              checked={paymentMode === "card"}
+              onChange={handlePaymentModeChange}
+              className="mr-2"
+            />
+            <label htmlFor="card">Credit/Debit Card</label>
           </div>
-        </form>
-      </div>
-    </DefaultLayout>
+          {paymentMode === "card" && (
+            <div className="mt-4">
+              <CardElement className="p-2 border border-gray-300 rounded" />
+            </div>
+          )}
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className={`bg-blue-500 text-white py-2 px-4 rounded ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
+          {loading ? "Processing..." : "Place Order"}
+        </button>
+      </form>
+    </div>
   );
 };
 
-const CheckoutStripe = () => (
-  <Elements stripe={stripePromise}>
-    <CheckoutPage />
-  </Elements>
-);
-
-export default CheckoutStripe;
+export default CheckoutPage;
