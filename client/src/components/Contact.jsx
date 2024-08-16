@@ -27,11 +27,8 @@ const Contact = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center pb-30 px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md">
-        <p className="mb-8 text-center text-lg text-gray-600">
-          Feel free to reach out to me for any questions or opportunities!
-        </p>
+    <div className="flex flex-col justify-center items-center">
+      <div className="w-full ">
         <form ref={form} onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2 border-2 border-e-gray-300 px-4 py-4 rounded">
             <div>

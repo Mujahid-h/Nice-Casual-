@@ -8,6 +8,7 @@ import DefaultLayout from "../components/DefaultLayout";
 import Spinner from "../components/Spinner";
 import Contact from "../components/Contact";
 import About from "../components/About";
+import ContactImage from "../assets/contact.svg";
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
@@ -66,19 +67,18 @@ const HomePage = () => {
               )}
             </div>
 
-            <div
-              className="py-16 px-4 sm:px-6 w-[100%]] lg:px-8 rounded-lg"
-              style={{
-                animation: "example 4s ease infinite",
-                backgroundSize: "200% 200%",
-                backgroundImage: "linear-gradient(to right, gray, white)",
-              }}
-            >
-              <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-4">
-                Get in Touch
-              </h2>
-              <div className="w-full mx-auto">
-                <Contact />
+            <div className="p-16  w-[90%] mx-auto bg-slate-50  rounded-lg ">
+              <h1 className="text-2xl mb-12 sm:text-3xl font-extrabold text-gray-900  text-center sm:text-right underline">
+                Contact Us
+              </h1>
+              <div className="flex flex-col items-center justify center gap-8 lg:flex-row">
+                <div className="min-w-[50%]">
+                  <img src={ContactImage} alt="contact" />
+                </div>
+
+                <div className="w-full">
+                  <Contact />
+                </div>
               </div>
             </div>
           </div>
