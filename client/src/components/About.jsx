@@ -1,14 +1,14 @@
 import React from "react";
-import aboutImage from "../assets/about.jpg";
+import aboutImage from "../assets/about.svg";
 
 const About = () => {
   return (
-    <section
-      className="w-[90%] mx-auto min-h-[40vh] lg:h-[90vh] md:h-[50vh] sm:h-[50vh] rounded-xl mt-20 bg-no-repeat bg-cover bg-center flex items-center justify-center sm:justify-end"
-      style={{ backgroundImage: `url(${aboutImage})` }}
-    >
-      <div className="bg-white bg-opacity-50 p-6 sm:p-8 lg:p-12 w-full sm:w-[70%] lg:w-[50%] xl:w-[40%] flex flex-col justify-center sm:mr-10 lg:mr-20 rounded-lg">
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-4 text-center sm:text-right">
+    <section className="w-[90%] mx-auto min-h-[70vh] lg:h-[100vh] md:h-[50vh]  rounded-xl mt-20 flex items-center justify-center gap-4 px-4 flex-col-reverse lg:flex-row bg-slate-50">
+      <div>
+        <img src={aboutImage} alt="about" />
+      </div>
+      <div className="w-[60%]">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-4 text-center sm:text-right underline">
           About Us
         </h2>
         <p className="text-base sm:text-lg text-gray-600 text-center sm:text-right">
