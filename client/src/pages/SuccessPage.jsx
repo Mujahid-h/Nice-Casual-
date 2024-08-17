@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import success from "../assets/success.svg";
+import { VscDebugContinue } from "react-icons/vsc";
 import DefaultLayout from "../components/DefaultLayout";
 
 const SuccessPage = () => {
@@ -22,9 +23,10 @@ const SuccessPage = () => {
         <div className="text-center">
           <button
             onClick={() => navigate("/")}
-            className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition duration-300"
+            className="bg-blue-600 flex gap-4 items-center  text-white px-6 py-3 rounded hover:bg-blue-700 transition duration-300"
           >
             Continue Shopping
+            <VscDebugContinue size={20} />
           </button>
         </div>
       </div>
