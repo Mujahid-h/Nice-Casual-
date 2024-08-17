@@ -67,12 +67,12 @@ const HomePage = () => {
               )}
             </div>
 
-            <div className="p-16  w-[90%] mx-auto bg-slate-50  rounded-lg ">
+            <div className="p-16 bg-slate-50  rounded-lg ">
               <h1 className="text-2xl mb-12 sm:text-3xl font-extrabold text-gray-900  text-center sm:text-right underline">
                 Contact Us
               </h1>
               <div className="flex flex-col items-center justify center gap-8 lg:flex-row">
-                <div className="min-w-[50%]">
+                <div className="w-[50%] min-w-[50%]">
                   <img src={ContactImage} alt="contact" />
                 </div>
 
