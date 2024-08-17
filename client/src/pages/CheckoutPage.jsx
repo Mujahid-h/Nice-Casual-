@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
-import { createOrder as reduxCreateOrder } from "../redux/orderSlice"; // Import the Redux action
-import { clearCart } from "../redux/cartSlice"; // Assuming cart actions exist
+import { createOrder as reduxCreateOrder } from "../redux/orderSlice";
+import { createOrder as apiCreateOrder } from "../api/orderApi";
+import { clearCart } from "../redux/cartSlice";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -81,6 +82,7 @@ const CheckoutPage = () => {
 
       // Save the order in Redux store
       dispatch(reduxCreateOrder(orderData));
+      await apiCreateOrder(orderData, userInfo.token);
 
       // Clear the cart
       dispatch(clearCart());
