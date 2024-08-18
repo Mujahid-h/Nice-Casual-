@@ -50,7 +50,7 @@ const CheckoutPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!stripe || !elements) {
+    if (paymentMode === "card" && (!stripe || !elements)) {
       return;
     }
 
@@ -58,6 +58,7 @@ const CheckoutPage = () => {
 
     try {
       let paymentMethodId = "";
+
       if (paymentMode === "card") {
         const { error, paymentMethod } = await stripe.createPaymentMethod({
           type: "card",
@@ -77,11 +78,13 @@ const CheckoutPage = () => {
         items: cartItems,
         deliveryDetails,
         paymentMode,
-        paymentMethodId,
+        paymentMethodId: paymentMode === "card" ? paymentMethodId : null,
       };
 
       // Save the order in Redux store
       dispatch(reduxCreateOrder(orderData));
+
+      // Call the API to create the order
       await apiCreateOrder(orderData, userInfo.token);
 
       // Clear the cart
@@ -98,13 +101,6 @@ const CheckoutPage = () => {
       setLoading(false);
     }
   };
-
-  // const calculateTotalAmount = () => {
-  //   return cartItems.reduce(
-  //     (total, item) => total + item.price * item.quantity,
-  //     0
-  //   );
-  // };
 
   return (
     <div className="container mx-auto p-4">
