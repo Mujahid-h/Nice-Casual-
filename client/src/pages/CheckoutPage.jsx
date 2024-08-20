@@ -48,6 +48,18 @@ const CheckoutPage = () => {
     setPaymentMode(e.target.value);
   };
 
+  const calculateTotalAmount = () => {
+    const subtotal = cartItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+    const tax = subtotal * 0.18;
+    const deliveryCharge = 250;
+    const totalAmount = subtotal + tax + deliveryCharge;
+
+    return totalAmount;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (paymentMode === "card" && (!stripe || !elements)) {
@@ -73,12 +85,16 @@ const CheckoutPage = () => {
         paymentMethodId = paymentMethod.id;
       }
 
+      // Calculate total amount
+      const totalAmount = calculateTotalAmount();
+
       // Prepare order data
       const orderData = {
         items: cartItems,
         deliveryDetails,
         paymentMode,
         paymentMethodId: paymentMode === "card" ? paymentMethodId : null,
+        totalAmount,
       };
 
       // Save the order in Redux store

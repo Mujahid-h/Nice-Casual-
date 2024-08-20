@@ -7,9 +7,8 @@ import store from "./redux/store";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
-// Replace this with your actual Stripe publishable key
 const stripePromise = loadStripe(
-  "pk_test_51PmDTFC80jaTZneL4fsAurFxdPnnynqTznp6aDtarTsaG8YBhynkRaRQhUCjcGDpJ2nbKvOpJnzYTIVOKSVvXy5n00PAvkfzeT"
+  "pk_test_51PmDTFC80jaTZneLHimWXFhCQDIBSMFhFxQr0nYmmV8F4SeoR67OAnDxRlBjseeSA0EfVFaFDlPMbpCYxhudNyTu008SbdTtC0"
 );
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

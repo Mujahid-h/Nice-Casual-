@@ -1,7 +1,6 @@
 import Order from "../models/Order.js";
-// import stripe from "stripe";
 import Stripe from "stripe";
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY); // Ensure you have this key in your .env file
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Create new order
 export const createOrder = async (req, res) => {
@@ -13,6 +12,8 @@ export const createOrder = async (req, res) => {
       totalAmount,
       paymentMethodId,
     } = req.body;
+
+    console.log(req.body);
 
     let paymentResult = {};
     let orderStatus = "pending";
