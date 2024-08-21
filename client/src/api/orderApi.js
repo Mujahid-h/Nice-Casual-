@@ -12,10 +12,9 @@ export const createOrder = async (orderData, token) => {
       },
     };
 
-    console.log("Order Data:", orderData);
-    const { data } = await axios.post(`${API}/orders`, orderData, config);
+    const response = await axios.post(`${API}/orders`, orderData, config);
 
-    return data;
+    return response.data;
   } catch (error) {
     console.error("Error creating order:", error);
     throw error;

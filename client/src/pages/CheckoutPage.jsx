@@ -15,7 +15,7 @@ const CheckoutPage = () => {
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.user);
 
-  const [deliveryDetails, setDeliveryDetails] = useState({
+  const [shippingDetails, setShippingDetails] = useState({
     name: "",
     email: "",
     phone1: "",
@@ -26,7 +26,7 @@ const CheckoutPage = () => {
     address1: "",
     address2: "",
   });
-  const [paymentMode, setPaymentMode] = useState("card");
+  const [paymentMethod, setPaymentMethod] = useState("card");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -38,14 +38,14 @@ const CheckoutPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setDeliveryDetails((prevDetails) => ({
+    setShippingDetails((prevDetails) => ({
       ...prevDetails,
       [name]: value,
     }));
   };
 
-  const handlePaymentModeChange = (e) => {
-    setPaymentMode(e.target.value);
+  const handlePaymentMethodChange = (e) => {
+    setPaymentMethod(e.target.value);
   };
 
   const calculateTotalAmount = () => {
@@ -62,7 +62,7 @@ const CheckoutPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (paymentMode === "card" && (!stripe || !elements)) {
+    if (paymentMethod === "card" && (!stripe || !elements)) {
       return;
     }
 
@@ -70,19 +70,29 @@ const CheckoutPage = () => {
 
     try {
       let paymentMethodId = "";
+      let paymentResult = {};
 
-      if (paymentMode === "card") {
-        const { error, paymentMethod } = await stripe.createPaymentMethod({
-          type: "card",
-          card: elements.getElement(CardElement),
-        });
+      if (paymentMethod === "card") {
+        const { error, paymentMethod: cardPaymentMethod } =
+          await stripe.createPaymentMethod({
+            type: "card",
+            card: elements.getElement(CardElement),
+          });
 
         if (error) {
           setError(error.message);
           setLoading(false);
           return;
         }
-        paymentMethodId = paymentMethod.id;
+        paymentMethodId = cardPaymentMethod.id;
+
+        // Add paymentResult details
+        paymentResult = {
+          id: cardPaymentMethod.id,
+          status: "succeeded",
+          update_time: new Date().toISOString(),
+          email_address: userInfo.email,
+        };
       }
 
       // Calculate total amount
@@ -91,10 +101,12 @@ const CheckoutPage = () => {
       // Prepare order data
       const orderData = {
         items: cartItems,
-        deliveryDetails,
-        paymentMode,
-        paymentMethodId: paymentMode === "card" ? paymentMethodId : null,
+        shippingDetails,
+        paymentMethod,
+        paymentMethodId: paymentMethod === "card" ? paymentMethodId : null,
+        paymentResult,
         totalAmount,
+        status: "pending",
       };
 
       // Save the order in Redux store
@@ -135,9 +147,9 @@ const CheckoutPage = () => {
           ))}
         </div>
         <div className="bg-white p-4 rounded shadow-md mb-4">
-          <h2 className="text-xl font-semibold mb-2">Delivery Details</h2>
+          <h2 className="text-xl font-semibold mb-2">Shipping Details</h2>
           <div className="space-y-2">
-            {Object.keys(deliveryDetails).map((key) => (
+            {Object.keys(shippingDetails).map((key) => (
               <div key={key} className="flex flex-col">
                 <label htmlFor={key} className="font-medium">
                   {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -146,7 +158,7 @@ const CheckoutPage = () => {
                   id={key}
                   name={key}
                   type="text"
-                  value={deliveryDetails[key]}
+                  value={shippingDetails[key]}
                   onChange={handleInputChange}
                   className="p-2 border border-gray-300 rounded"
                 />
@@ -160,10 +172,10 @@ const CheckoutPage = () => {
             <input
               type="radio"
               id="cash"
-              name="paymentMode"
+              name="paymentMethod"
               value="cash"
-              checked={paymentMode === "cash"}
-              onChange={handlePaymentModeChange}
+              checked={paymentMethod === "cash"}
+              onChange={handlePaymentMethodChange}
               className="mr-2"
             />
             <label htmlFor="cash" className="mr-4">
@@ -172,15 +184,15 @@ const CheckoutPage = () => {
             <input
               type="radio"
               id="card"
-              name="paymentMode"
+              name="paymentMethod"
               value="card"
-              checked={paymentMode === "card"}
-              onChange={handlePaymentModeChange}
+              checked={paymentMethod === "card"}
+              onChange={handlePaymentMethodChange}
               className="mr-2"
             />
             <label htmlFor="card">Credit/Debit Card</label>
           </div>
-          {paymentMode === "card" && (
+          {paymentMethod === "card" && (
             <div className="mt-4">
               <CardElement className="p-2 border border-gray-300 rounded" />
             </div>

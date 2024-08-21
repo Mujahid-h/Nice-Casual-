@@ -4,13 +4,13 @@ import { useDispatch } from "react-redux";
 import { getProductById } from "../api/productApi";
 import { addToCart } from "../redux/cartSlice";
 import DefaultLayout from "../components/DefaultLayout";
-import Spinner from "../components/Spinner"; // Import the Spinner component
+import Spinner from "../components/Spinner";
 
 const ProductDetailPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
   const initialQuantities = {
     Small: 0,
     Medium: 0,
@@ -23,13 +23,13 @@ const ProductDetailPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        setLoading(true); // Set loading to true before fetching
+        setLoading(true);
         const fetchedProduct = await getProductById(id);
         setProduct(fetchedProduct);
       } catch (error) {
         console.log(error);
       } finally {
-        setLoading(false); // Set loading to false after fetching (success or fail)
+        setLoading(false);
       }
     };
 
@@ -43,6 +43,23 @@ const ProductDetailPage = () => {
     }));
   };
 
+  // const handleAddToCart = () => {
+  //   const totalQuantity = Object.values(quantities).reduce((a, b) => a + b, 0);
+  //   if (totalQuantity === 0) {
+  //     setAlert("Please select a size before adding to cart.");
+  //     setTimeout(() => setAlert(""), 3000);
+  //     return;
+  //   }
+
+  //   for (const size in quantities) {
+  //     if (quantities[size] > 0) {
+  //       dispatch(addToCart({ ...product, size, quantity: quantities[size] }));
+  //     }
+  //   }
+  //   setAlert("Added to cart successfully!");
+  //   setTimeout(() => setAlert(""), 3000);
+  // };
+
   const handleAddToCart = () => {
     const totalQuantity = Object.values(quantities).reduce((a, b) => a + b, 0);
     if (totalQuantity === 0) {
@@ -51,9 +68,20 @@ const ProductDetailPage = () => {
       return;
     }
 
+    // Dispatch actions for each size
     for (const size in quantities) {
       if (quantities[size] > 0) {
-        dispatch(addToCart({ ...product, size, quantity: quantities[size] }));
+        dispatch(
+          addToCart({
+            _id: product._id,
+            name: product.name,
+            image: product.image,
+            price: product.price,
+            description: product.description,
+            size,
+            quantity: quantities[size],
+          })
+        );
       }
     }
     setAlert("Added to cart successfully!");
@@ -73,7 +101,7 @@ const ProductDetailPage = () => {
   if (!product) {
     return (
       <DefaultLayout>
-        <div className="text-center mt-8">Product not found</div>
+        <h1 className="text-center mt-8">Product not found</h1>
       </DefaultLayout>
     );
   }

@@ -1,6 +1,6 @@
 import Order from "../models/Order.js";
-import Stripe from "stripe";
-const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+import stripe from "stripe";
+const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 
 // Create new order
 export const createOrder = async (req, res) => {
@@ -21,7 +21,7 @@ export const createOrder = async (req, res) => {
     if (paymentMethod === "card") {
       try {
         // Create a PaymentIntent with the order amount and currency
-        const paymentIntent = await stripe.paymentIntents.create({
+        const paymentIntent = await Stripe.paymentIntents.create({
           amount: Math.round(totalAmount * 100), // Stripe expects amount in cents
           currency: "pkr",
           payment_method: paymentMethodId,

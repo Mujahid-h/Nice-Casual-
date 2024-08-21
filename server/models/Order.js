@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema(
       {
         product: {
           type: mongoose.Schema.Types.ObjectId,
-          required: true,
+          // required: true,
           ref: "Product",
         },
         name: { type: String, required: true },
@@ -27,6 +27,9 @@ const orderSchema = new mongoose.Schema(
       phone2: { type: String },
       address1: { type: String, required: true },
       address2: { type: String },
+      country: { type: String, required: true },
+      city: { type: String, required: true },
+      state: { type: String, required: true },
     },
     paymentMethod: { type: String, required: true },
     paymentResult: {
