@@ -10,7 +10,7 @@ const SuccessPage = () => {
   return (
     <DefaultLayout>
       <div className="container mx-auto p-4 flex-col flex justify-center items-center">
-        <img src={success} width={120} alt="success_image" className="my-8" />
+        <img src={success} width={150} alt="success_image" className="my-8" />
         <h1 className="text-gray-800 text-center font-bold text-3xl mb-4">
           Payment Successful!
         </h1>
