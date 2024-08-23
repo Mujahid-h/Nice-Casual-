@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { FaEye } from "react-icons/fa";
+import { FaEdit, FaEye } from "react-icons/fa";
 import { getProducts, deleteProduct } from "../api/productApi";
 import { getUsers, deleteUser } from "../api/userApi";
 import { getOrders } from "../api/orderApi";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Spinner from "../components/Spinner";
+import { MdDelete } from "react-icons/md";
 
 const AdminPanel = ({ toggleUserView }) => {
   const [products, setProducts] = useState([]);
@@ -59,15 +60,6 @@ const AdminPanel = ({ toggleUserView }) => {
     }
     setLoadingOrders(false);
   };
-
-  // const handleUpdateOrderStatus = async (orderId, newStatus) => {
-  //   try {
-  //     await updateOrderStatus(orderId, newStatus, userInfo.token);
-  //     fetchOrders();
-  //   } catch (error) {
-  //     console.error("Error updating order status:", error);
-  //   }
-  // };
 
   const handleViewOrder = (orderId) => {
     navigate(`/orders/manage/${orderId}`);
@@ -153,13 +145,13 @@ const AdminPanel = ({ toggleUserView }) => {
                         }
                         className="bg-yellow-500 text-white px-3 py-1 rounded mr-2 mb-1 hover:bg-yellow-600"
                       >
-                        Edit
+                        <FaEdit size={24} />
                       </button>
                       <button
                         onClick={() => handleDeleteProduct(product._id)}
                         className="bg-red-500 text-white px-3 py-1 mt-1 rounded hover:bg-red-600"
                       >
-                        Delete
+                        <MdDelete size={24} />
                       </button>
                     </td>
                   </tr>
@@ -204,7 +196,7 @@ const AdminPanel = ({ toggleUserView }) => {
                         onClick={() => handleDeleteUser(user._id)}
                         className="bg-red-500 text-white  px-3 py-1 rounded hover:bg-red-600"
                       >
-                        Delete
+                        <MdDelete size={24} />
                       </button>
                     </td>
                   </tr>
