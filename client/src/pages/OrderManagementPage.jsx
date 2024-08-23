@@ -98,6 +98,9 @@ const OrderManagementPage = () => {
             <strong>Phone:</strong> {order.shippingDetails.phone1},{" "}
             {order.shippingDetails.phone2}
           </p>
+          <p>
+            <strong>Total Amount: PKR.{order.totalAmount}</strong>
+          </p>
         </div>
       </div>
 
