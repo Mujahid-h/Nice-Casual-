@@ -27,21 +27,83 @@ const OrdersPage = () => {
   }, [userInfo]);
 
   return (
-    <div>
-      <h1>Your Orders</h1>
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6 text-center">Your Orders</h1>
       {orders.length > 0 ? (
-        <ul>
+        <div className="space-y-6">
           {orders.map((order) => (
-            <li key={order._id}>
-              <p>Invoice: {order.invoiceNumber}</p>
-              <p>Total: ${order.totalAmount}</p>
-              <p>Status: {order.status}</p>
-              {/* Add more order details here */}
-            </li>
+            <div
+              key={order._id}
+              className="bg-white p-6 rounded-lg shadow-lg border border-gray-200"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <p className="text-lg font-semibold">
+                    Invoice: {order.invoiceNumber}
+                  </p>
+                  <p className="text-sm text-gray-500 bg-red-100 p-3 rounded w-fit">
+                    Status: <strong>{order.status}</strong>
+                  </p>
+                </div>
+                <div className="text-lg font-semibold">
+                  Total: PKR. {order.totalAmount.toFixed(2)}
+                </div>
+              </div>
+
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Order Items</h2>
+                <ul className="space-y-4">
+                  {order.items.map((item, index) => (
+                    <li
+                      key={index}
+                      className="flex justify-between items-center border-b pb-2"
+                    >
+                      <div>
+                        <p className="font-medium">{item.name}</p>
+                        <p className="text-sm text-gray-500">
+                          Size: {item.size}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Quantity: {item.quantity}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm text-gray-500">Price:</p>
+                        <p className="font-semibold">
+                          PKR. {item.price.toFixed(2)}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mt-6">
+                <h2 className="text-xl font-semibold mb-2">Shipping Details</h2>
+                <div className="text-gray-700">
+                  <p>{order.shippingDetails.name}</p>
+                  <p>{order.shippingDetails.email}</p>
+                  <p>
+                    {order.shippingDetails.phone1}
+                    {order.shippingDetails.phone2
+                      ? `, ${order.shippingDetails.phone2}`
+                      : ""}
+                  </p>
+                  <p>{order.shippingDetails.address1}</p>
+                  {order.shippingDetails.address2 && (
+                    <p>{order.shippingDetails.address2}</p>
+                  )}
+                  <p>
+                    {order.shippingDetails.city}, {order.shippingDetails.state},{" "}
+                    {order.shippingDetails.country}
+                  </p>
+                </div>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       ) : (
-        <p>No orders found.</p>
+        <p className="text-center text-gray-600">No orders found.</p>
       )}
     </div>
   );
