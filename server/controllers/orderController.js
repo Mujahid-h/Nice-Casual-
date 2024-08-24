@@ -51,6 +51,16 @@ export const getOrders = async (req, res) => {
   }
 };
 
+// Get User Orders
+export const getUserOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({});
+    res.json(orders);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 // Update order status (admin only)
 export const updateOrderStatus = async (req, res) => {
   try {

@@ -38,6 +38,13 @@ const Navbar = () => {
           <Link to="/" className="text-lg font-semibold hover:text-white ">
             Home
           </Link>
+
+          <Link
+            to="/orders/myorders"
+            className="text-lg font-semibold hover:text-white "
+          >
+            My Orders
+          </Link>
           {userLogin ? (
             <div className="relative inline-block text-left">
               <button

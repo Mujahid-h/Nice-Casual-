@@ -10,6 +10,7 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import SuccessPage from "./pages/SuccessPage";
 import OrderManagementPage from "./pages/OrderManagementPage";
+import OrdersPage from "./pages/OrdersPage";
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/orders/manage/:id" element={<OrderManagementPage />} />
+          <Route path="/orders/myorders" element={<OrdersPage />} />
         </Routes>
       </Router>
     </>

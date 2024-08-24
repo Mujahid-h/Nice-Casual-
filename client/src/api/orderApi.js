@@ -33,6 +33,18 @@ export const getOrders = async (token) => {
   }
 };
 
+export const getUserOrders = async (token) => {
+  try {
+    const response = await axios.get(`${API}/orders/user`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    throw error;
+  }
+};
+
 export const getOrderById = async (id, token) => {
   try {
     const response = await axios.get(`${API}/orders/${id}`, {
