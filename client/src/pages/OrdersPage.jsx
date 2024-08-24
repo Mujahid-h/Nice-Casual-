@@ -81,10 +81,18 @@ const OrdersPage = () => {
               <div className="mt-6">
                 <h2 className="text-xl font-semibold mb-2">Shipping Details</h2>
                 <div className="text-gray-700">
-                  <p>{order.shippingDetails.name}</p>
-                  <p>{order.shippingDetails.email}</p>
                   <p>
-                    {order.shippingDetails.phone1}
+                    <strong>Name: </strong>
+                    {order.shippingDetails.name}
+                  </p>
+                  <p>
+                    <strong>Email: </strong>
+                    {order.shippingDetails.email}
+                  </p>
+                  <p>
+                    <strong>Mobile1: </strong> {order.shippingDetails.phone1}
+                    <br />
+                    <strong>Mobile2: </strong>
                     {order.shippingDetails.phone2
                       ? `, ${order.shippingDetails.phone2}`
                       : ""}
