@@ -47,9 +47,6 @@ const OrdersPage = () => {
                       Status: <strong>{order.status}</strong>
                     </p>
                   </div>
-                  <div className="text-lg font-semibold">
-                    Total: PKR. {order.totalAmount.toFixed(2)}
-                  </div>
                 </div>
 
                 <div>
@@ -70,10 +67,9 @@ const OrdersPage = () => {
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm text-gray-500">Price:</p>
-                          <p className="font-semibold">
-                            PKR. {item.price.toFixed(2)}
-                          </p>
+                          <div className="text-lg font-semibold">
+                            Total: PKR. {order.totalAmount.toFixed(2)}
+                          </div>
                         </div>
                       </li>
                     ))}
@@ -101,15 +97,23 @@ const OrdersPage = () => {
                         ? `, ${order.shippingDetails.phone2}`
                         : ""}
                     </p>
-                    <p>{order.shippingDetails.address1}</p>
-                    {order.shippingDetails.address2 && (
-                      <p>{order.shippingDetails.address2}</p>
-                    )}
                     <p>
+                      {" "}
+                      <strong>Address 1: </strong>
+                      {order.shippingDetails.address1},
                       {order.shippingDetails.city},{" "}
                       {order.shippingDetails.state},{" "}
                       {order.shippingDetails.country}
                     </p>
+                    {order.shippingDetails.address2 && (
+                      <p>
+                        <strong>Address 2: </strong>
+                        {order.shippingDetails.address2},{" "}
+                        {order.shippingDetails.city},{" "}
+                        {order.shippingDetails.state},{" "}
+                        {order.shippingDetails.country}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
