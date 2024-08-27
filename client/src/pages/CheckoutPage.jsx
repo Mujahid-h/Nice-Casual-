@@ -144,7 +144,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { createOrder as apiCreateOrder } from "../api/orderApi";
 import { useDispatch, useSelector } from "react-redux";
-import { clearCart, selectUniqueProductCount } from "../redux/cartSlice";
+import { clearCart } from "../redux/cartSlice";
 import DefaultLayout from "../components/DefaultLayout";
 
 const CheckoutPage = () => {
@@ -166,13 +166,12 @@ const CheckoutPage = () => {
   const location = useLocation();
   const { userInfo } = useSelector((state) => state.user);
   const { cartItems } = useSelector((state) => state.cart);
-  const uniqueProductCount = useSelector(selectUniqueProductCount);
 
   useEffect(() => {
     if (!userInfo) {
       navigate("/login", { state: { from: location.pathname } });
     }
-  }, [userInfo, navigate]);
+  }, [userInfo, navigate, location.pathname]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -182,7 +181,6 @@ const CheckoutPage = () => {
     }));
   };
 
-  // Group cart items by unique product ID
   const groupCartItemsByProduct = () => {
     const groupedItems = {};
 
@@ -193,22 +191,24 @@ const CheckoutPage = () => {
           sizes: [{ size: item.size, quantity: item.quantity }],
         };
       } else {
-        const existingSize = groupedItems[item._id].sizes.find(
-          (sizeInfo) => sizeInfo.size === item.size
-        );
-
-        if (existingSize) {
-          existingSize.quantity += item.quantity;
-        } else {
-          groupedItems[item._id].sizes.push({
-            size: item.size,
-            quantity: item.quantity,
-          });
-        }
+        groupedItems[item._id].sizes.push({
+          size: item.size,
+          quantity: item.quantity,
+        });
       }
     });
 
     return Object.values(groupedItems);
+  };
+
+  const prepareOrderItems = () => {
+    return cartItems.map((item) => ({
+      product: item._id,
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+      size: item.size,
+    }));
   };
 
   const calculateTotalAmount = () => {
@@ -228,28 +228,19 @@ const CheckoutPage = () => {
     setLoading(true);
 
     try {
-      // Calculate total amount
       const totalAmount = calculateTotalAmount();
+      const orderItems = prepareOrderItems();
 
-      // Grouped cart items
-      const groupedCartItems = groupCartItemsByProduct();
-
-      // Prepare order data
       const orderData = {
-        items: groupedCartItems,
+        items: orderItems,
         shippingDetails,
         paymentMethod: "cash",
         totalAmount,
         status: "Pending",
       };
 
-      // Call the API to create the order
       await apiCreateOrder(orderData, userInfo.token);
-
-      // Clear the cart in localStorage
       dispatch(clearCart());
-
-      // Navigate to success page
       navigate("/success");
     } catch (error) {
       setError(
@@ -261,14 +252,13 @@ const CheckoutPage = () => {
     }
   };
 
-  // Group the cart items to display in the UI
   const groupedCartItems = groupCartItemsByProduct();
 
   return (
     <DefaultLayout>
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4 text-center">Checkout</h1>
-        {error && alert(error)}
+        {error && <div className="text-red-500 mb-4">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Order Summary */}
           <div className="bg-white p-4 rounded shadow-md mb-4">
@@ -283,6 +273,7 @@ const CheckoutPage = () => {
                       <th className="border px-4 py-2 text-left">Product</th>
                       <th className="border px-4 py-2 text-left">Size</th>
                       <th className="border px-4 py-2 text-left">Quantity</th>
+                      <th className="border px-4 py-2 text-left">Price</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -297,6 +288,13 @@ const CheckoutPage = () => {
                         <td className="border px-4 py-2">
                           {item.sizes.map((sizeInfo, index) => (
                             <div key={index}>{sizeInfo.quantity}</div>
+                          ))}
+                        </td>
+                        <td className="border px-4 py-2">
+                          {item.sizes.map((sizeInfo, index) => (
+                            <div key={index}>
+                              {sizeInfo.quantity * item.price}
+                            </div>
                           ))}
                         </td>
                       </tr>
@@ -328,6 +326,7 @@ const CheckoutPage = () => {
                     onChange={handleInputChange}
                     className="p-2 border border-gray-300 rounded"
                     placeholder={`Enter ${key}`}
+                    required={key !== "phone2" && key !== "address2"}
                   />
                 </div>
               ))}

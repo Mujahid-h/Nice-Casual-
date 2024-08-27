@@ -268,6 +268,15 @@ const OrderManagementPage = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
+  // Group items by product name
+  const groupedItems = order.items.reduce((acc, item) => {
+    if (!acc[item.name]) {
+      acc[item.name] = [];
+    }
+    acc[item.name].push(item);
+    return acc;
+  }, {});
+
   return (
     <div className="max-w-4xl mx-auto p-4 my-12 bg-white shadow-md">
       <h2 className="text-2xl font-bold mb-4">Order Management</h2>
@@ -285,48 +294,81 @@ const OrderManagementPage = () => {
             <strong>Order Date:</strong>{" "}
             {new Date(order.createdAt).toLocaleString()}
           </p>
+          <p className="text-gray-600">
+            <strong>Invoice Number:</strong> {order.invoiceNumber}
+          </p>
         </div>
       </div>
 
       <div className="mb-6">
-        <h3 className="text-lg font-bold">Items</h3>
-        <div className="mt-2">
-          {order.items.map((item) => (
-            <div key={item.product} className="border-b py-2">
-              <p className="text-gray-600">
-                <strong>Product:</strong> {item.name}
-              </p>
-              <p className="text-gray-600">
-                <strong>Quantity:</strong> {item.quantity}
-              </p>
-              <p className="text-gray-600">
-                <strong>Size:</strong> {item.size || "N/A"}
-              </p>
+        <h3 className="text-lg font-bold mb-2">Items</h3>
+        {Object.keys(groupedItems).map((productName, idx) => (
+          <div key={idx} className="mb-4">
+            <h4 className="text-md font-semibold">{productName}</h4>
+            <div className="overflow-x-auto">
+              <table className="min-w-full table-auto">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="px-4 py-2 text-left">Size</th>
+                    <th className="px-4 py-2 text-left">Quantity</th>
+                    <th className="px-4 py-2 text-left">Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {groupedItems[productName].map((item, index) => (
+                    <tr key={index} className="border-b">
+                      <td className="px-4 py-2">{item.size}</td>
+                      <td className="px-4 py-2">{item.quantity}</td>
+                      <td className="px-4 py-2">
+                        PKR {(item.quantity * item.price).toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
       <div className="mb-6">
         <h3 className="text-lg font-bold">Shipping Details</h3>
         <div className="mt-2">
           <p className="text-gray-600">
-            <strong>Address:</strong> {order.shippingDetails.address1},
+            <strong>Address:</strong> {order.shippingDetails.address1}
+          </p>
+          <p className="text-gray-600">
+            <strong>City:</strong> {order.shippingDetails.city}
+          </p>
+          <p className="text-gray-600">
+            <strong>State:</strong> {order.shippingDetails.state}
+          </p>
+          <p className="text-gray-600">
+            <strong>Country:</strong> {order.shippingDetails.country}
           </p>
           <p className="text-gray-600">
             <strong>Phone 1:</strong> {order.shippingDetails.phone1}
           </p>
-          <p className="text-gray-600">
-            <strong>Phone 2:</strong> {order.shippingDetails.phone2}
-          </p>
-          <p className="text-gray-600">
-            <strong>Total Amount: PKR.{order.totalAmount}</strong>
-          </p>
+          {order.shippingDetails.phone2 && (
+            <p className="text-gray-600">
+              <strong>Phone 2:</strong> {order.shippingDetails.phone2}
+            </p>
+          )}
         </div>
       </div>
 
       <div className="mb-6">
-        <h3 className="text-lg font-bold">Order Status</h3>
+        <h3 className="text-lg font-bold">Order Summary</h3>
+        <p className="text-gray-600">
+          <strong>Total Amount:</strong> PKR {order.totalAmount.toFixed(2)}
+        </p>
+        <p className="text-gray-600">
+          <strong>Current Status:</strong> {order.status}
+        </p>
+      </div>
+
+      <div className="mb-6">
+        <h3 className="text-lg font-bold">Update Order Status</h3>
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
