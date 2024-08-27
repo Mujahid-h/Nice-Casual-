@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { loginUser } from "../api/userApi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "../redux/userSlice";
 
@@ -10,13 +10,16 @@ const LoginPage = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  const redirectPath = location.state?.from || "/";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const userData = await loginUser({ email, password });
       dispatch(setUserInfo(userData));
-      navigate("/");
+      navigate(redirectPath);
     } catch (error) {
       setError(error.message);
     }

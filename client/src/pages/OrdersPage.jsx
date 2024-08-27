@@ -2,10 +2,13 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getUserOrders } from "../api/orderApi";
 import DefaultLayout from "../components/DefaultLayout";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const OrdersPage = () => {
   const { userInfo } = useSelector((state) => state.user);
   const [orders, setOrders] = useState([]);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -18,6 +21,8 @@ const OrdersPage = () => {
           );
 
           setOrders(userOrders);
+        } else {
+          navigate("/login", { state: { from: location.pathname } });
         }
       } catch (error) {
         console.error("Error fetching orders:", error);

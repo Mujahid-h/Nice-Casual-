@@ -27,7 +27,7 @@ export const createOrder = async (req, res) => {
       shippingDetails,
       totalAmount,
       invoiceNumber, // Add invoice number to the order
-      status: "pending", // Default order status
+      status: "Pending", // Default order status
     });
 
     const createdOrder = await order.save();
