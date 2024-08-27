@@ -278,49 +278,53 @@ const OrderManagementPage = () => {
   }, {});
 
   return (
-    <div className="max-w-4xl mx-auto p-4 my-12 bg-white shadow-md">
-      <h2 className="text-2xl font-bold mb-4">Order Management</h2>
+    <div className="max-w-4xl mx-auto p-4 my-6 md:my-12 bg-black text-white shadow-white shadow-md rounded">
+      <h2 className="text-xl md:text-2xl font-bold mb-4">Order Management</h2>
 
       <div className="mb-6">
         <h3 className="text-lg font-bold">Order Details</h3>
-        <div className="mt-2">
-          <p className="text-gray-600">
+        <div className="mt-2 text-sm md:text-base">
+          <p className="text-gray-400">
             <strong>Customer:</strong> {order.user.name}
           </p>
-          <p className="text-gray-600">
+          <p className="text-gray-400">
             <strong>Email:</strong> {order.user.email}
           </p>
-          <p className="text-gray-600">
+          <p className="text-gray-400">
             <strong>Order Date:</strong>{" "}
             {new Date(order.createdAt).toLocaleString()}
           </p>
-          <p className="text-gray-600">
+          <p className="text-gray-400">
             <strong>Invoice Number:</strong> {order.invoiceNumber}
           </p>
         </div>
       </div>
 
-      <div className="mb-6">
-        <h3 className="text-lg font-bold mb-2">Items</h3>
+      <h3 className="text-lg font-bold mb-2 text-center">Items</h3>
+      <div className="mb-6 border-y border-gray-400 py-4">
         {Object.keys(groupedItems).map((productName, idx) => (
           <div key={idx} className="mb-4">
-            <h4 className="text-md font-semibold">{productName}</h4>
+            <h4 className="text-md font-bold mb-2">
+              {idx + 1}) {productName}
+            </h4>
             <div className="overflow-x-auto">
-              <table className="min-w-full table-auto">
+              <table className="w-full text-sm md:text-base">
                 <thead>
-                  <tr className="bg-gray-200">
-                    <th className="px-4 py-2 text-left">Size</th>
-                    <th className="px-4 py-2 text-left">Quantity</th>
-                    <th className="px-4 py-2 text-left">Price</th>
+                  <tr className="bg-gray-700 border">
+                    <th className="px-2 md:px-4 py-2 text-center border-e">
+                      Size
+                    </th>
+                    <th className="px-2 md:px-4 py-2 text-center">Quantity</th>
                   </tr>
                 </thead>
                 <tbody>
                   {groupedItems[productName].map((item, index) => (
-                    <tr key={index} className="border-b">
-                      <td className="px-4 py-2">{item.size}</td>
-                      <td className="px-4 py-2">{item.quantity}</td>
-                      <td className="px-4 py-2">
-                        PKR {(item.quantity * item.price).toFixed(2)}
+                    <tr key={index} className="border">
+                      <td className="px-2 md:px-4 py-2 text-center border">
+                        {item.size}
+                      </td>
+                      <td className="px-2 md:px-4 py-2 text-center">
+                        {item.quantity}
                       </td>
                     </tr>
                   ))}
@@ -333,24 +337,24 @@ const OrderManagementPage = () => {
 
       <div className="mb-6">
         <h3 className="text-lg font-bold">Shipping Details</h3>
-        <div className="mt-2">
-          <p className="text-gray-600">
+        <div className="mt-2 text-sm md:text-base text-gray-400">
+          <p>
             <strong>Address:</strong> {order.shippingDetails.address1}
           </p>
-          <p className="text-gray-600">
+          <p>
             <strong>City:</strong> {order.shippingDetails.city}
           </p>
-          <p className="text-gray-600">
+          <p>
             <strong>State:</strong> {order.shippingDetails.state}
           </p>
-          <p className="text-gray-600">
+          <p>
             <strong>Country:</strong> {order.shippingDetails.country}
           </p>
-          <p className="text-gray-600">
+          <p>
             <strong>Phone 1:</strong> {order.shippingDetails.phone1}
           </p>
           {order.shippingDetails.phone2 && (
-            <p className="text-gray-600">
+            <p>
               <strong>Phone 2:</strong> {order.shippingDetails.phone2}
             </p>
           )}
@@ -359,10 +363,10 @@ const OrderManagementPage = () => {
 
       <div className="mb-6">
         <h3 className="text-lg font-bold">Order Summary</h3>
-        <p className="text-gray-600">
+        <p className="text-sm md:text-base text-gray-400">
           <strong>Total Amount:</strong> PKR {order.totalAmount.toFixed(2)}
         </p>
-        <p className="text-gray-600">
+        <p className="text-sm md:text-base text-gray-400">
           <strong>Current Status:</strong> {order.status}
         </p>
       </div>
@@ -372,7 +376,7 @@ const OrderManagementPage = () => {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="border rounded p-2 mt-2"
+          className="w-full md:w-auto border rounded p-2 mt-2 bg-gray-700 text-sm md:text-base"
         >
           <option value="Pending">Pending</option>
           <option value="Processing">Processing</option>
@@ -381,18 +385,18 @@ const OrderManagementPage = () => {
         </select>
       </div>
 
-      <div className="flex justify-between">
-        <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
           <button
             onClick={handleStatusUpdate}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="w-full md:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm md:text-base"
           >
             Update Status
           </button>
 
           <button
             onClick={generateInvoice}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            className="w-full md:w-auto bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm md:text-base"
           >
             Generate Invoice
           </button>
@@ -400,7 +404,7 @@ const OrderManagementPage = () => {
 
         <button
           onClick={() => navigate("/")}
-          className="bg-gray-100 hover:bg-gray-200 border text-black-100 font-bold px-4 py-2 rounded"
+          className="w-full md:w-auto bg-gray-700 hover:bg-gray-800 border text-white font-bold px-4 py-2 rounded text-sm md:text-base"
         >
           Home
         </button>
