@@ -196,39 +196,36 @@ const OrdersPage = () => {
                       Status: <strong>{order.status}</strong>
                     </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xl font-bold">
-                      Total: PKR {order.totalAmount.toFixed(2)}
-                    </p>
-                  </div>
                 </div>
 
-                <div>
+                <h2 className="text-xl font-bold mb-2 text-center">Items</h2>
+                <div className="border-t border-gray-400 pt-2">
                   {Object.entries(groupOrderItems(order.items)).map(
                     ([productName, sizes], index) => (
-                      <div key={index} className="mb-6">
-                        <h2 className="text-lg font-semibold mb-2">
-                          {productName}
+                      <div key={index} className="mb-6 ">
+                        <h2 className="text-lg font-bold mb-2">
+                          {index + 1}) {productName}
                         </h2>
                         <div className="overflow-x-auto">
-                          <table className="min-w-full table-auto">
+                          <table className="w-full lg:w-4/6 mx-auto">
                             <thead>
                               <tr className="bg-gray-200">
-                                <th className="px-4 py-2 text-left">Size</th>
-                                <th className="px-4 py-2 text-left">
+                                <th className="px-4 py-2 text-center border-e ">
+                                  Size
+                                </th>
+                                <th className="px-4 py-2 text-center">
                                   Quantity
                                 </th>
-                                <th className="px-4 py-2 text-left">Price</th>
                               </tr>
                             </thead>
                             <tbody>
                               {sizes.map((size, idx) => (
-                                <tr key={idx} className="border-b">
-                                  <td className="px-4 py-2">{size.size}</td>
-                                  <td className="px-4 py-2">{size.quantity}</td>
-                                  <td className="px-4 py-2">
-                                    PKR{" "}
-                                    {(size.quantity * size.price).toFixed(2)}
+                                <tr key={idx} className="border">
+                                  <td className="px-4 py-2 text-center border">
+                                    {size.size}
+                                  </td>
+                                  <td className=" py-2 text-center">
+                                    {size.quantity}
                                   </td>
                                 </tr>
                               ))}
@@ -239,12 +236,17 @@ const OrdersPage = () => {
                     )
                   )}
                 </div>
+                <div className="text-left border-y border-gray-400 py-4">
+                  <p className="text-xl font-bold">
+                    Total: PKR {order.totalAmount.toFixed(2)}
+                  </p>
+                </div>
 
                 <div className="mt-6">
-                  <h2 className="text-xl font-semibold mb-2">
+                  <h2 className="text-xl font-bold mb-2 underline">
                     Shipping Details
                   </h2>
-                  <div className="text-gray-700">
+                  <div className="text-gray-700 flex flex-col gap-2">
                     <p>
                       <strong>Name: </strong>
                       {order.shippingDetails.name}
@@ -255,13 +257,13 @@ const OrdersPage = () => {
                     </p>
                     <p>
                       <strong>Mobile1: </strong> {order.shippingDetails.phone1}
-                      {order.shippingDetails.phone2 && (
-                        <>
-                          , <strong>Mobile2: </strong>
-                          {order.shippingDetails.phone2}
-                        </>
-                      )}
                     </p>
+                    {order.shippingDetails.phone2 && (
+                      <p>
+                        <strong>Mobile2: </strong>
+                        {order.shippingDetails.phone2}
+                      </p>
+                    )}
                     <p>
                       <strong>Address 1: </strong>
                       {order.shippingDetails.address1}
