@@ -11,6 +11,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import SuccessPage from "./pages/SuccessPage";
 import OrderManagementPage from "./pages/OrderManagementPage";
 import OrdersPage from "./pages/OrdersPage";
+import PageNotFound from "./pages/PageNotFound";
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
           <Route path="/success" element={<SuccessPage />} />
           <Route path="/orders/manage/:id" element={<OrderManagementPage />} />
           <Route path="/orders/myorders" element={<OrdersPage />} />
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </Router>
     </>
