@@ -311,9 +311,7 @@ const OrderManagementPage = () => {
         <h3 className="text-lg font-bold">Shipping Details</h3>
         <div className="mt-2">
           <p className="text-gray-600">
-            <strong>Address:</strong> {order.shippingDetails.address1},{" "}
-            {order.shippingDetails.city}, {order.shippingDetails.state},{" "}
-            {order.shippingDetails.country}
+            <strong>Address:</strong> {order.shippingDetails.address1},
           </p>
           <p className="text-gray-600">
             <strong>Phone 1:</strong> {order.shippingDetails.phone1}

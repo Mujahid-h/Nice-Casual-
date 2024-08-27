@@ -105,18 +105,12 @@ const OrdersPage = () => {
                     <p>
                       {" "}
                       <strong>Address 1: </strong>
-                      {order.shippingDetails.address1},
-                      {order.shippingDetails.city},{" "}
-                      {order.shippingDetails.state},{" "}
-                      {order.shippingDetails.country}
+                      {order.shippingDetails.address1}.
                     </p>
                     {order.shippingDetails.address2 && (
                       <p>
                         <strong>Address 2: </strong>
-                        {order.shippingDetails.address2},{" "}
-                        {order.shippingDetails.city},{" "}
-                        {order.shippingDetails.state},{" "}
-                        {order.shippingDetails.country}
+                        {order.shippingDetails.address2}.
                       </p>
                     )}
                   </div>
