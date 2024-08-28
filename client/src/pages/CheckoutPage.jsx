@@ -146,6 +146,7 @@ import { createOrder as apiCreateOrder } from "../api/orderApi";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCart } from "../redux/cartSlice";
 import DefaultLayout from "../components/DefaultLayout";
+import { paymentSuccess } from "../redux/orderSlice";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -241,6 +242,7 @@ const CheckoutPage = () => {
 
       await apiCreateOrder(orderData, userInfo.token);
       dispatch(clearCart());
+      dispatch(paymentSuccess());
       navigate("/success");
     } catch (error) {
       setError(
