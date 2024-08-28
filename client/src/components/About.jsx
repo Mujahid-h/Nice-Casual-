@@ -3,7 +3,10 @@ import aboutImage from "../assets/about.svg";
 
 const About = () => {
   return (
-    <section className="w-[90%] mx-auto py-12 min-h-[70vh] lg:h-[100vh] md:h-[50vh] rounded-xl mt-20 flex flex-col-reverse lg:flex-row items-center justify-center gap-4 px-4 bg-slate-50">
+    <section
+      id="about"
+      className="w-[90%] mx-auto py-12 min-h-[70vh] lg:h-[100vh] md:h-[50vh] rounded-xl mt-20 flex flex-col-reverse lg:flex-row items-center justify-center gap-4 px-4 bg-slate-50"
+    >
       <div className="w-full lg:w-[40%] flex justify-center">
         <img
           src={aboutImage}
