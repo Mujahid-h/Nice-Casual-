@@ -1,16 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const initialState = {
+  hasPaid: false,
+};
+
 const orderSlice = createSlice({
   name: "order",
-  initialState: {
-    orders: [],
-  },
+  initialState,
   reducers: {
-    createOrder: (state, action) => {
-      state.orders.push(action.payload);
+    paymentSuccess(state) {
+      state.hasPaid = true;
+    },
+    resetPaymentStatus(state) {
+      state.hasPaid = false;
     },
   },
 });
 
-export const { createOrder } = orderSlice.actions;
+export const { paymentSuccess, resetPaymentStatus } = orderSlice.actions;
 export default orderSlice.reducer;
