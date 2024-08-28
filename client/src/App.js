@@ -12,6 +12,7 @@ import SuccessPage from "./pages/SuccessPage";
 import OrderManagementPage from "./pages/OrderManagementPage";
 import OrdersPage from "./pages/OrdersPage";
 import PageNotFound from "./pages/PageNotFound";
+import ShopPage from "./pages/ShopPage";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
           <Route path="/product/:id" element={<ProductDetailPage />} />
           <Route path="/products/create" element={<AddProduct />} />
           <Route path="/products/edit/:id" element={<EditProduct />} />
+          <Route path="/shop" element={<ShopPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/success" element={<SuccessPage />} />

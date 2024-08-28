@@ -192,7 +192,17 @@ const OrdersPage = () => {
                     <p className="text-lg font-semibold">
                       Invoice: {order.invoiceNumber}
                     </p>
-                    <p className="text-sm text-gray-500 bg-red-100 p-3 rounded w-fit">
+                    <p
+                      className={`text-sm text-gray-500 p-3 rounded w-fit ${
+                        order.status === "Pending"
+                          ? "bg-red-100"
+                          : order.status === "Processing"
+                          ? "bg-orange-100"
+                          : order.status === "Departed"
+                          ? "bg-blue-100"
+                          : "bg-green-100"
+                      }`}
+                    >
                       Status: <strong>{order.status}</strong>
                     </p>
                   </div>

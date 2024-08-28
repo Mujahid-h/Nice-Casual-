@@ -61,9 +61,9 @@ const HomePage = () => {
               {loading ? (
                 <Spinner />
               ) : (
-                products.map((item) => (
-                  <ProductCard key={item._id} product={item} />
-                ))
+                products
+                  .slice(0, 8)
+                  .map((item) => <ProductCard key={item._id} product={item} />)
               )}
             </div>
 
