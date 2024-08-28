@@ -42,7 +42,11 @@ const Footer = () => {
           <div className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 mb-6 sm:mb-0">
             <h2 className="text-lg font-semibold mb-2">Follow Us</h2>
             <div className="flex space-x-4 text-gray-300">
-              <a href="#" className="hover:text-white">
+              <a
+                href="https://www.facebook.com/profile.php?id=100010197427787"
+                target="_blank"
+                className="hover:text-white"
+              >
                 <svg
                   className="w-6 h-6"
                   fill="currentColor"
@@ -52,7 +56,11 @@ const Footer = () => {
                 </svg>
               </a>
 
-              <a href="#" className="hover:text-white">
+              <a
+                href="https://www.linkedin.com/in/mujahid-hussain-4b3b84254/"
+                target="_blank"
+                className="hover:text-white"
+              >
                 <svg
                   className="w-6 h-6"
                   fill="currentColor"
@@ -62,7 +70,11 @@ const Footer = () => {
                 </svg>
               </a>
 
-              <a href="#" className="hover:text-white">
+              <a
+                href="https://github.com/Mujahid-h"
+                target="_blank"
+                className="hover:text-white"
+              >
                 <svg
                   className="w-6 h-6"
                   fill="currentColor"
@@ -72,7 +84,11 @@ const Footer = () => {
                 </svg>
               </a>
 
-              <a href="#" className="hover:text-white">
+              <a
+                href="https://www.instagram.com/h_mujahid123/?hl=en"
+                target="_blank"
+                className="hover:text-white"
+              >
                 <svg
                   className="w-6 h-6"
                   fill="currentColor"

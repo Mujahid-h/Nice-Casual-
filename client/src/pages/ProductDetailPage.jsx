@@ -122,7 +122,7 @@ const ProductDetailPage = () => {
             <h1 className="text-2xl sm:text-3xl font-bold mb-4">
               {product.name}
             </h1>
-            <p className="text-xl text-gray-700 mb-4">${product.price}</p>
+            <p className="text-xl text-gray-700 mb-4">PKR. {product.price}</p>
             <p className="text-gray-600 mb-4">{product.description}</p>
             <div className="mb-4">
               <h6 className="text-sm font-semibold mb-2">Size & Quantity:</h6>
