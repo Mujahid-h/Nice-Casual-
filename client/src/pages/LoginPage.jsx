@@ -3,6 +3,7 @@ import { loginUser } from "../api/userApi";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "../redux/userSlice";
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -20,6 +21,17 @@ const LoginPage = () => {
       const userData = await loginUser({ email, password });
       dispatch(setUserInfo(userData));
       navigate(redirectPath);
+      toast.success("Successfully sign in!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        // transition: Bounce,
+      });
     } catch (error) {
       setError(error.message);
     }
