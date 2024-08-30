@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const API = "http://localhost:5000/api";
 
@@ -18,6 +19,16 @@ export const loginUser = async (credentials) => {
     return response.data;
   } catch (error) {
     console.error("Error logging in:", error);
+    toast.error("Invalid credentials", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
     throw error.response?.data?.message || "Login failed";
   }
 };
