@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { registerUser } from "../api/userApi";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -13,8 +14,17 @@ const RegisterPage = () => {
     e.preventDefault();
     try {
       const userData = await registerUser({ name, email, password });
-      console.log(userData);
       navigate("/login");
+      toast.success("Successfully registered!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } catch (error) {
       setError(error.message);
     }
