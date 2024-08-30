@@ -9,6 +9,16 @@ export const registerUser = async (userData) => {
     return response.data;
   } catch (error) {
     console.error("Error registering user:", error);
+    toast.error("Somehing went wrong! Try again.", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
     throw error.response?.data?.message || "Registration failed";
   }
 };
