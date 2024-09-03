@@ -147,6 +147,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearCart } from "../redux/cartSlice";
 import DefaultLayout from "../components/DefaultLayout";
 import { paymentSuccess } from "../redux/orderSlice";
+import { toast } from "react-toastify";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -243,6 +244,16 @@ const CheckoutPage = () => {
       await apiCreateOrder(orderData, userInfo.token);
       dispatch(clearCart());
       dispatch(paymentSuccess());
+      toast.success("Successfully registered!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
       navigate("/success");
     } catch (error) {
       setError(

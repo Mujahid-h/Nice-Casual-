@@ -49,14 +49,7 @@ const App = () => {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/orders/manage/:id"
-            element={
-              <ProtectedRoute requiredRole="admin">
-                <OrderManagementPage />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/orders/manage/:id" element={<OrderManagementPage />} />
 
           {/* Protect Success Page */}
           <Route
