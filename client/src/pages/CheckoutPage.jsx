@@ -244,7 +244,7 @@ const CheckoutPage = () => {
       await apiCreateOrder(orderData, userInfo.token);
       dispatch(clearCart());
       dispatch(paymentSuccess());
-      toast.success("Successfully registered!", {
+      toast.success("Order Placed Successfully!", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -258,6 +258,19 @@ const CheckoutPage = () => {
     } catch (error) {
       setError(
         "An error occurred while processing your order. Please try again."
+      );
+      toast.error(
+        "An error occurred while processing your order. Please try again.",
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        }
       );
       console.error(error);
     } finally {
