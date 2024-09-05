@@ -1,17 +1,15 @@
 import React from "react";
-import { FidgetSpinner } from "react-loader-spinner";
+import { RotatingLines } from "react-loader-spinner";
 
 const Spinner = () => {
   return (
     <div className="flex justify-center items-center w-full">
-      <FidgetSpinner
+      <RotatingLines
+        strokeColor="grey"
+        strokeWidth="5"
+        animationDuration="1"
+        width="96"
         visible={true}
-        height="150" // Increased height
-        width="150" // Increased width
-        color="#1E3A8A" // Changed color to blue (Tailwind color: blue-900)
-        ariaLabel="fidget-spinner-loading"
-        wrapperStyle={{}}
-        wrapperClass="fidget-spinner-wrapper"
       />
     </div>
   );
