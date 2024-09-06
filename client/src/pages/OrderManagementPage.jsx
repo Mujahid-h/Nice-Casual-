@@ -146,6 +146,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getOrderById, updateOrderStatus } from "../api/orderApi";
 import { useSelector } from "react-redux";
 import { jsPDF } from "jspdf";
+import { toast } from "react-toastify";
 
 const OrderManagementPage = () => {
   const { id } = useParams();
@@ -178,12 +179,31 @@ const OrderManagementPage = () => {
   const handleStatusUpdate = async () => {
     try {
       await updateOrderStatus(orderId, status, token);
-      alert("Order status updated successfully");
+      toast.success("Order status updated successfully", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
     } catch (err) {
-      alert(
+      toast.error(
         `Failed to update order status: ${
           err.response?.data?.message || err.message
-        }`
+        }`,
+        {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        }
       );
     }
   };
